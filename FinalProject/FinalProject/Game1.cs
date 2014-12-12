@@ -196,6 +196,7 @@ namespace FinalProject
             players.Add(local);
 
             terrain.Add(new Terrain(this, camera));
+            Components.Clear();
             foreach (var t in terrain)
             {
                 // load all terrains here
