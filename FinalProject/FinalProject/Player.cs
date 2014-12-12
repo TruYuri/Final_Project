@@ -13,7 +13,7 @@ using Microsoft.Xna.Framework.Net;
 
 namespace FinalProject
 {
-    class Player : Microsoft.Xna.Framework.GameComponent
+    class Player
     {
         public int ID;
         Camera camera; // all movement
@@ -24,7 +24,7 @@ namespace FinalProject
         public Vector3 Position;
         public Vector3 YPR;
 
-        public Player(Game game, Camera c, List<Terrain> t, bool local, BasicModel m, int i) : base(game)
+        public Player(Game game, Camera c, List<Terrain> t, bool local, BasicModel m, int i)
         {
             camera = c;
             terrains = t;
@@ -33,7 +33,7 @@ namespace FinalProject
             ID = i;
         }
 
-        public override void Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
             if (localPlayer)
             {

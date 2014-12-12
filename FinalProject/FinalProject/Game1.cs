@@ -44,8 +44,6 @@ namespace FinalProject
             // load all the terrain pieces here
             terrain = new List<Terrain>();
             players = new List<Player>();
-
-            //Components.Add(new GamerServicesComponent(this));
         }
 
         protected override void Initialize()
@@ -98,7 +96,7 @@ namespace FinalProject
         {
             // Set game state to InGame
             currentGameState = GameState.InGame;
-
+            GameObjectManager.Instance.Reset();
             // Any other things that need to be set up
             //for beginning a game
             //Starting audio, resetting values, etc.
@@ -146,11 +144,20 @@ namespace FinalProject
                         case MessageType.UpdateRemotePlayer:
                             UpdateRemotePlayer(gameTime);
                             break;
+                        case MessageType.WeaponFired:
+                            WeaponFired();
+                            break;
                         //Any other actions for specific messages
 
                     }
                 }
             }
+        }
+
+        protected void WeaponFired()
+        {
+            //theOtherPlayer.Position = packetReader.ReadVector3();
+            //theOtherPlayer.YPR = packetReader.ReadVector3();
         }
 
         protected void WireUpEvents()
@@ -188,7 +195,6 @@ namespace FinalProject
             Player local = new Player(this, camera, terrain, true, null, nextID++);
             players.Add(local);
 
-            Components.Add(local);
             terrain.Add(new Terrain(this, camera));
             foreach (var t in terrain)
             {
@@ -197,6 +203,7 @@ namespace FinalProject
                 Components.Add(t);
                 t.Load("image", Content.Load<Texture2D>("Map_c"), 256, 256, 5.0f, 1.0f);
             }
+            Components.Add(new GameObjectManager(this, camera));
 
             return local;
         }
@@ -205,7 +212,6 @@ namespace FinalProject
         {
             Player remote = new Player(this, camera, terrain, false, new BasicModel(Content.Load<Model>("spaceship"), new Vector3(0, 600, 0)), nextID++);
             players.Add(remote);
-            Components.Add(remote);
             return remote;
         }
 
@@ -243,9 +249,9 @@ namespace FinalProject
                 {
                     // Get the PlayerClass representing the other player
                     Player theOtherPlayer;
-                    foreach(var player in players)
+                    //foreach(var player in players)
                     {
-                        // if(player.ID == ((Player)gamer.Tag).ID)
+                        //if(player.ID == ((Player)gamer.Tag).ID)
                         {
                             theOtherPlayer = ((Player)gamer.Tag);
 
@@ -256,7 +262,6 @@ namespace FinalProject
                         }
                     }
 
-
                     //Read any other information from the packet and handle it
                 }
             }
@@ -266,6 +271,9 @@ namespace FinalProject
         {
             // Update the local player
             UpdateLocalPlayer(gameTime);
+
+            foreach (var p in players)
+                p.Update(gameTime);
 
 	     // Read any incoming data
             ProcessIncomingData(gameTime);
@@ -301,6 +309,7 @@ namespace FinalProject
             KeyboardState keyboardState = Keyboard.GetState();
             GamePadState gamePadSate = GamePad.GetState(PlayerIndex.One);
             
+            /*
             // If player presses Enter or A button, restart game
             if (keyboardState.IsKeyDown(Keys.Enter) ||
                 gamePadSate.Buttons.A == ButtonState.Pressed)
@@ -322,6 +331,7 @@ namespace FinalProject
                     SendDataOptions.Reliable);
                 //RejoinLobby();
             }
+             */
 
             // Read any incoming messages
             ProcessIncomingData(gameTime);
