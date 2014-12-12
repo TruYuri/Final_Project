@@ -206,7 +206,7 @@ namespace FinalProject
             }
             Components.Add(new GameObjectManager(this, camera));
 
-            return players;
+            return localPlayer;
         }
 
         private object CreateRemotePlayer()
