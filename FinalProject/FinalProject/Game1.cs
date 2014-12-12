@@ -235,10 +235,13 @@ namespace FinalProject
             packetWriter.Write(local.YPR);
 
             // Send data to other player
-            localGamer.SendData(packetWriter, SendDataOptions.InOrder);
+            foreach (NetworkGamer gamer in networkSession.AllGamers)
+            {
+                if(!gamer.IsLocal)
+                    localGamer.SendData(packetWriter, SendDataOptions.InOrder, gamer);
+            }
 
             //Package up any other necessary data and send it to other player
-
         }
 
         protected void UpdateRemotePlayer(GameTime gameTime)
@@ -310,7 +313,6 @@ namespace FinalProject
             KeyboardState keyboardState = Keyboard.GetState();
             GamePadState gamePadSate = GamePad.GetState(PlayerIndex.One);
             
-            /*
             // If player presses Enter or A button, restart game
             if (keyboardState.IsKeyDown(Keys.Enter) ||
                 gamePadSate.Buttons.A == ButtonState.Pressed)
@@ -332,7 +334,6 @@ namespace FinalProject
                     SendDataOptions.Reliable);
                 //RejoinLobby();
             }
-             */
 
             // Read any incoming messages
             ProcessIncomingData(gameTime);
