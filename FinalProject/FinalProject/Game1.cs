@@ -24,6 +24,7 @@ namespace FinalProject
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Camera camera;
+        Player localPlayer;
         List<Player> players;
         List<Terrain> terrain;
         NetworkSession networkSession;
@@ -192,8 +193,7 @@ namespace FinalProject
         private object CreateLocalPlayer()
         {
             camera = new Camera(this, new Vector3(0, 600, 0), new Vector3(0, 0, 1), new Vector3(0, 1, 0), terrain);
-            Player local = new Player(this, camera, terrain, true, null, nextID++);
-            players.Add(local);
+            localPlayer = new Player(this, camera, terrain, true, null, nextID++);
 
             terrain.Add(new Terrain(this, camera));
             Components.Clear();
@@ -206,7 +206,7 @@ namespace FinalProject
             }
             Components.Add(new GameObjectManager(this, camera));
 
-            return local;
+            return players;
         }
 
         private object CreateRemotePlayer()
@@ -380,7 +380,7 @@ namespace FinalProject
         private void Update_CreateSession()
         {
             // Create a new session using SystemLink with a max of 1
-            // local player and a max of 2 total players
+            // local playerand a max of 2 total players
             networkSession = NetworkSession.Create(NetworkSessionType.SystemLink, 1, 3);
 	       //If the host drops, other player becomes host
             networkSession.AllowHostMigration = true;
