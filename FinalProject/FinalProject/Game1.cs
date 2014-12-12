@@ -282,12 +282,12 @@ namespace FinalProject
             if (networkSession.IsHost)
             {
                     // Check for end game conditions, if they are met send a message to other player
-	            {
+	            /*{
 	                packetWriter.Write((int)MessageType.EndGame);
                     networkSession.LocalGamers[0].SendData(packetWriter, 
 		            SendDataOptions.Reliable);
 		            EndGame();
-                }
+                }*/
               }
         }
 
