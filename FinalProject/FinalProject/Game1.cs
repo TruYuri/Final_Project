@@ -159,16 +159,15 @@ namespace FinalProject
         protected void Died()
         {
             // Get the other (non-local) player
-            byte id = packetReader.ReadByte();
-            //foreach (var gamer in networkSession.AllGamers)
+            string tag = packetReader.ReadString();
+            foreach (var player in players)
             {
-                //if (gamer.Id == id)
+                if (player.name == tag)
                 {
-                    Player p2 = ((Player)networkSession.FindGamerById(id).Tag);
-                    p2.Delete();
-                    p2.alive = false;
-                    p2.health = 0;
-                    //break;
+                    player.Delete();
+                    player.alive = false;
+                    player.health = 0;
+                    break;
                 }
             }
         }
@@ -193,21 +192,21 @@ namespace FinalProject
         {
             // Gamer joined. Set the tag for the gamer to a new UserControlledObject.
             // These Tags are going to be your local representation of remote players
-            if (e.Gamer.IsHost)
+            if (e.Gamer.IsLocal)
             {
 	      //The Create players will create and return instances of your player class, setting
 	      //the appropriate values to differentiate between local and remote players
 	      //Tag is of type Object, which means it can hold any type
-                e.Gamer.Tag = CreateLocalPlayer(e.Gamer.Id);
+                e.Gamer.Tag = CreateLocalPlayer(e.Gamer.Gamertag);
                 currentGameState = GameState.InGame;
             }
             else
             {
-                e.Gamer.Tag = CreateRemotePlayer(e.Gamer.Id);
+                e.Gamer.Tag = CreateRemotePlayer(e.Gamer.Gamertag);
             }
         }
 
-        private object CreateLocalPlayer(byte id)
+        private object CreateLocalPlayer(string name)
         {
             map = new Map();
             camera = new Camera(this, new Vector3(0, 600, 0), new Vector3(0, 0, 1), new Vector3(0, 1, 0), map);
@@ -216,7 +215,7 @@ namespace FinalProject
             Components.Add(new GameObjectManager(this, camera));
 
             localPlayer = new Player(this, camera, map, true,
-                                     new BasicModel(Content.Load<Model>("spaceship"), new Vector3(0, 600, 0)), id);
+                                     new BasicModel(Content.Load<Model>("spaceship"), new Vector3(0, 600, 0)), name);
             localPlayer.Initialize();
 
             Terrain center = new Terrain(this, camera);
@@ -249,9 +248,9 @@ namespace FinalProject
             return localPlayer;
         }
 
-        private object CreateRemotePlayer(byte id)
+        private object CreateRemotePlayer(string name)
         {
-            Player remote = new Player(this, camera, map, false, new BasicModel(Content.Load<Model>("spaceship"), new Vector3(0, 600, 0)), id);
+            Player remote = new Player(this, camera, map, false, new BasicModel(Content.Load<Model>("spaceship"), new Vector3(0, 600, 0)), name);
             players.Add(remote);
             return remote;
         }
@@ -278,7 +277,7 @@ namespace FinalProject
                     {
                         // Send message to other player with message tag and new position of local player
                         packetWriter.Write((int)MessageType.UpdateRemotePlayer);
-                        packetWriter.Write(localPlayer.id);
+                        packetWriter.Write(localPlayer.name);
                         packetWriter.Write(localPlayer.Position);
                         packetWriter.Write(localPlayer.Forward);
 
@@ -287,7 +286,7 @@ namespace FinalProject
                     else
                     {
                         packetWriter.Write((int)MessageType.Died);
-                        packetWriter.Write(localPlayer.id);
+                        packetWriter.Write(localPlayer.name);
                         localGamer.SendData(packetWriter, SendDataOptions.ReliableInOrder, gamer);
                     }
                 }
@@ -299,14 +298,13 @@ namespace FinalProject
         protected void UpdateRemotePlayer(GameTime gameTime)
         {
             // Get the other (non-local) player
-            byte id = packetReader.ReadByte();
-            //foreach (var gamer in players)
+            string name = packetReader.ReadString();
+            foreach (var gamer in players)
             {
-                //if (gamer.id == id)
+                if (gamer.name == name)
                 {
-                    Player p2 = ((Player)networkSession.FindGamerById(id).Tag);
-                    p2.Position = packetReader.ReadVector3();
-                    p2.Forward = packetReader.ReadVector3();
+                    gamer.Position = packetReader.ReadVector3();
+                    gamer.Forward = packetReader.ReadVector3();
                 }
             }
         }
@@ -341,19 +339,19 @@ namespace FinalProject
             networkSession.Dispose();
             networkSession = null;
 
-            Player player = ((Player)networkSession.FindGamerById(e.Gamer.Id).Tag);
-            //foreach (var pl in players)
-            //{
+            Player player = null;
+            foreach (var pl in players)
+            {
                 //Perform any necessary clean up,
                 //stop sound track, etc.
 
-                //if (e.Gamer.Id == pl.id)
+                if (e.Gamer.Tag == pl.name)
                 {
-                    //player = pl;
-                    player.Delete();
+                    player = pl;
+                    pl.Delete();
                     //break;
                 }
-            //}
+            }
             players.Remove(player);
         
 		    //Go back to looking for another session
@@ -425,6 +423,7 @@ namespace FinalProject
                 // If a session does exist, join it, wire up events,
                 // and move to the Start game state
                 networkSession = NetworkSession.Join(sessions[0]);
+                networkSession.Update();
                 WireUpEvents();
             }
         }
@@ -438,7 +437,7 @@ namespace FinalProject
             networkSession.AllowHostMigration = true;
 	       //Cannot join a game in progress
             networkSession.AllowJoinInProgress = false;
-        
+            networkSession.Update();
             // Wire up events and move to the Start game state
             WireUpEvents();
         }
