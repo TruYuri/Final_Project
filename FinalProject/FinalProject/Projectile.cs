@@ -19,7 +19,7 @@ namespace FinalProject
         float speed;
         float timeToLive;
 
-        public Projectile(BasicModel m, Vector3 d, float s)
+        public Projectile(BasicModel m, Vector3 d, float s) : base(m)
         {
             model = m;
             dir = d;
@@ -31,9 +31,9 @@ namespace FinalProject
 
         }
 
-        public override void Draw(Camera camera)
+        public override void Draw(Camera c)
         {
-
+            base.Draw(c);
         }
     }
 }

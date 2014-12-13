@@ -14,7 +14,7 @@ namespace FinalProject
 {
     class Camera
     {
-        public Matrix view { get; protected set; }
+        public Matrix view { get; set; }
         public Matrix projection { get; protected set; }
 
         public Vector3 cameraPosition;

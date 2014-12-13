@@ -17,8 +17,26 @@ namespace FinalProject
     {
         public BasicModel model;
         public Matrix world;
-        public virtual void Update(GameTime gameTime) {}
-        public virtual void Draw(Camera camera) {}
+        public BoundingSphere sphere;
 
+        public GameObject(BasicModel m) 
+        { 
+            model = m;
+            sphere = model.model.Meshes[0].BoundingSphere;
+
+            GameObjectManager.Instance.AddGameObject(this);
+        }
+
+        public virtual void Update(GameTime gameTime) 
+        {
+            if(model != null)
+                model.World = world;
+        }
+
+        public virtual void Draw(Camera c) 
+        {
+            if (model != null)
+                model.Draw(c);
+        }
     }
 }

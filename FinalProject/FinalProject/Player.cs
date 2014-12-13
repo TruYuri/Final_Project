@@ -21,7 +21,7 @@ namespace FinalProject
 
         Camera camera; // all movement
         Map map;
-        BasicModel model;
+        GameObject gameObject;
         bool localPlayer;
 
         public Player(Game game, Camera c, Map t, bool local, BasicModel m, string n)
@@ -30,23 +30,35 @@ namespace FinalProject
             camera = c;
             map = t;
             localPlayer = local;
-            model = m;
+            gameObject = new GameObject(m);
         }
 
         public void Update(GameTime gameTime)
         {
             if (localPlayer)
             {
+                var oldPos = camera.view;
+                var oldTar = camera.target;
                 camera.Update(gameTime);
+
+                if (GameObjectManager.Instance.CheckCollision(gameObject))
+                {
+                    camera.target = oldTar;
+                    camera.view = oldPos;
+                    camera.cameraPosition = oldPos.Translation;
+                }
+
                 Position = camera.cameraPosition;
                 Forward = camera.target;
+                gameObject.world = camera.view;
+                gameObject.Update(gameTime);
             }
             else
             {
                 var matrix = Matrix.CreateWorld(Position, -(Forward - Position), Vector3.Up);
-                model.World = matrix;
+                gameObject.world = matrix;
+                gameObject.Update(gameTime);
             }
-            // send network stuff
         }
 
         public void Draw()
@@ -57,7 +69,6 @@ namespace FinalProject
             }
             else
             {
-                model.Draw(camera);
             }
         }
     }

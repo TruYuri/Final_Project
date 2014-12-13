@@ -39,6 +39,19 @@ namespace FinalProject
             camera = c;
         }
 
+        public bool CheckCollision(GameObject obj)
+        {
+            foreach (var go in gameObjects)
+            {
+                if (obj == go)
+                    continue;
+                if (obj.sphere.Intersects(go.sphere))
+                    return true;
+            }
+
+            return false;
+        }
+
         public override void Update(GameTime gameTime)
         {
  	         base.Update(gameTime);
