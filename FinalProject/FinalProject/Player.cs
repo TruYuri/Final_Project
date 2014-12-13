@@ -23,7 +23,8 @@ namespace FinalProject
         bool localPlayer;
 
         public Vector3 Position;
-        public Quaternion Rotation;
+        public Vector3 Target;
+        //public Quaternion Rotation;
         public Player(Game game, Camera c, List<Terrain> t, bool local, BasicModel m, string n)
         {
             playerName = n;
@@ -39,24 +40,13 @@ namespace FinalProject
             {
                 camera.Update(gameTime);
                 Position = camera.cameraPosition;
-                Rotation = Quaternion.CreateFromRotationMatrix(camera.view);
+                Target = camera.target;
+                Target.Normalize();
+                //Rotation = Quaternion.CreateFromRotationMatrix(camera.view);
             }
             else
             {
-                float q0 = Rotation.W;
-                float q1 = Rotation.Y;
-                float q2 = Rotation.X;
-                float q3 = Rotation.Z;
-                Vector3 radAngles = new Vector3();
-                radAngles.X = (float)Math.Atan2(2 * (q0 * q1 + q2 * q3), 1 - 2 * (Math.Pow(q1, 2) + Math.Pow(q2, 2)));
-                radAngles.Y = (float)Math.Asin(2 * (q0 * q2 - q3 * q1));
-                radAngles.Z = (float)Math.Atan2(2 * (q0 * q3 + q1 * q2), 1 - 2 * (Math.Pow(q2, 2) + Math.Pow(q3, 2)));
-                Vector3 angles = new Vector3();
-                angles.X = MathHelper.ToDegrees(radAngles.X);
-                angles.Y = MathHelper.ToDegrees(radAngles.Y);
-                angles.Z = MathHelper.ToDegrees(radAngles.Z);
-
-                var matrix = Matrix.CreateFromYawPitchRoll(radAngles.Y, radAngles.X, radAngles.Z);
+                var matrix = Matrix.CreateWorld(Position, Target, Vector3.Zero);
                 matrix.Translation = Position;
                 model.World = matrix;
             }

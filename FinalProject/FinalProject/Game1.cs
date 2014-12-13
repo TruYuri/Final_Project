@@ -237,7 +237,7 @@ namespace FinalProject
                     // Send message to other player with message tag and new position of local player
                     packetWriter.Write((int)MessageType.UpdateRemotePlayer);
                     packetWriter.Write(localPlayer.Position);
-                    packetWriter.Write(localPlayer.Rotation);
+                    packetWriter.Write(localPlayer.Target);
 
                     localGamer.SendData(packetWriter, SendDataOptions.InOrder, gamer);
                 }
@@ -258,7 +258,7 @@ namespace FinalProject
                         if (gamer.DisplayName == pl.playerName)
                         {
                             pl.Position = packetReader.ReadVector3();
-                            pl.Rotation = packetReader.ReadQuaternion();
+                            pl.Target = packetReader.ReadVector3();
                             break;
                         }
                     }

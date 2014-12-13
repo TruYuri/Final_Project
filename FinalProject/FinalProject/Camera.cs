@@ -20,7 +20,7 @@ namespace FinalProject
         public Vector3 cameraPosition;
         public Vector3 cameraDirection;
         Vector3 cameraUp;
-        Vector3 target;
+        public Vector3 target;
         Vector3 velocity;
         bool jumping;
         MouseState prevMouseState;
