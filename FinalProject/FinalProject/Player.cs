@@ -53,12 +53,9 @@ namespace FinalProject
             if (localPlayer)
             {
                 //camera.update_clone();
-                var oldPos = camera.view;
-                var oldTar = camera.target;
                 camera.Update(gameTime);
 
                 var colliders = GameObjectManager.Instance.CheckCollision(gameObject);
-
                 foreach (var collider in colliders)
                 {
                     switch(collider.type)

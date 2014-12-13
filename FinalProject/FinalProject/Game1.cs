@@ -174,8 +174,7 @@ namespace FinalProject
 
         protected void WeaponFired()
         {
-            //theOtherPlayer.Position = packetReader.ReadVector3();
-            //theOtherPlayer.YPR = packetReader.ReadVector3();
+            
         }
 
         protected void WireUpEvents()
@@ -288,7 +287,7 @@ namespace FinalProject
                     {
                         packetWriter.Write((int)MessageType.Died);
                         packetWriter.Write(localPlayer.playerName);
-                        localGamer.SendData(packetWriter, SendDataOptions.Reliable, gamer);
+                        localGamer.SendData(packetWriter, SendDataOptions.ReliableInOrder, gamer);
                     }
                 }
             }
@@ -300,13 +299,12 @@ namespace FinalProject
         {
             // Get the other (non-local) player
             string name = packetReader.ReadString();
-            foreach (var gamer in networkSession.AllGamers)
+            foreach (var gamer in players)
             {
-                if (gamer.Gamertag == name)
+                if (gamer.playerName == name)
                 {
-                    Player p2 = ((Player)gamer.Tag);
-                    p2.Position = packetReader.ReadVector3();
-                    p2.Forward = packetReader.ReadVector3();
+                    gamer.Position = packetReader.ReadVector3();
+                    gamer.Forward = packetReader.ReadVector3();
                     break;
                 }
             }
