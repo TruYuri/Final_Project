@@ -42,7 +42,7 @@ namespace FinalProject
             camera.Update(new GameTime());
             Position = camera.cameraPosition;
             Forward = camera.target;
-            gameObject.world = camera.view;
+            gameObject.world = Matrix.CreateWorld(Position, -(Forward - Position), Vector3.Up);
         }
 
         public void Update(GameTime gameTime)
@@ -62,7 +62,7 @@ namespace FinalProject
 
                 Position = camera.cameraPosition;
                 Forward = camera.target;
-                gameObject.world = camera.view;
+                gameObject.world = Matrix.CreateWorld(Position, -(Forward - Position), Vector3.Up);
             }
             else
             {
