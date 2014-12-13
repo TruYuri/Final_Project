@@ -26,7 +26,7 @@ namespace FinalProject
         Camera camera;
         Player localPlayer;
         List<Player> players;
-        List<Terrain> terrain;
+        Map map;
         NetworkSession networkSession;
         PacketWriter packetWriter;
         PacketReader packetReader;
@@ -42,8 +42,6 @@ namespace FinalProject
             packetWriter = new PacketWriter();
             packetReader = new PacketReader();
 
-            // load all the terrain pieces here
-            terrain = new List<Terrain>();
             players = new List<Player>();
         }
 
@@ -192,18 +190,38 @@ namespace FinalProject
 
         private object CreateLocalPlayer(string name)
         {
-            camera = new Camera(this, new Vector3(0, 600, 0), new Vector3(0, 0, 1), new Vector3(0, 1, 0), terrain);
-            localPlayer = new Player(this, camera, terrain, true, null, name);
+            map = new Map();
+            camera = new Camera(this, new Vector3(0, 600, 0), new Vector3(0, 0, 1), new Vector3(0, 1, 0), map);
+            localPlayer = new Player(this, camera, map, true, null, name);
 
-            terrain.Add(new Terrain(this, camera));
+            Terrain center = new Terrain(this, camera);
+            center.Load("image", Content.Load<Texture2D>("Map_c"), 256, 256, 5.0f, 1.0f, new MapOffset(), Content, GraphicsDevice);
+            
+            float mapOffSet = (float)Math.Abs(center.startPosition.X * 2);
+
+            Terrain left = new Terrain(this, camera);
+            MapOffset leftOffSet = new MapOffset(1, 0, 0, 0, mapOffSet);
+            left.Load("image", Content.Load<Texture2D>("Map_c"), 256, 256, 5.0f, 1.0f, leftOffSet, Content, GraphicsDevice);
+
+            Terrain right = new Terrain(this, camera);
+            MapOffset rightOffSet = new MapOffset(0, 1, 0, 0, mapOffSet);
+            right.Load("image", Content.Load<Texture2D>("Map_c"), 256, 256, 5.0f, 1.0f, rightOffSet, Content, GraphicsDevice);
+
+            Terrain up = new Terrain(this, camera);
+            MapOffset upOffSet = new MapOffset(0, 0, 0, 1, mapOffSet);
+            up.Load("image", Content.Load<Texture2D>("Map_c"), 256, 256, 5.0f, 1.0f, upOffSet, Content, GraphicsDevice);
+
+            Terrain down = new Terrain(this, camera);
+            MapOffset downOffSet = new MapOffset(0, 0, 1, 0, mapOffSet);
+            down.Load("image", Content.Load<Texture2D>("Map_c"), 256, 256, 5.0f, 1.0f, downOffSet, Content, GraphicsDevice);
+
+            map.terrainPieces.Add(center);
+            map.terrainPieces.Add(left);
+            map.terrainPieces.Add(right);
+            map.terrainPieces.Add(up);
+            map.terrainPieces.Add(down);
             Components.Clear();
-            foreach (var t in terrain)
-            {
-                // load all terrains here
-                t.camera = camera;
-                Components.Add(t);
-                t.Load("image", Content.Load<Texture2D>("Map_c"), 256, 256, 5.0f, 1.0f);
-            }
+
             Components.Add(new GameObjectManager(this, camera));
 
             return localPlayer;
@@ -211,7 +229,7 @@ namespace FinalProject
 
         private object CreateRemotePlayer(string name)
         {
-            Player remote = new Player(this, camera, terrain, false, new BasicModel(Content.Load<Model>("spaceship"), new Vector3(0, 600, 0)), name);
+            Player remote = new Player(this, camera, map, false, new BasicModel(Content.Load<Model>("spaceship"), new Vector3(0, 600, 0)), name);
             players.Add(remote);
             return remote;
         }
@@ -454,6 +472,11 @@ namespace FinalProject
             foreach(var p in players)
             {
                 p.Draw();
+            }
+
+            foreach(var m in map.terrainPieces)
+            {
+                m.Draw(gameTime);
             }
         }
     }

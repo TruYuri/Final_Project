@@ -12,10 +12,50 @@ using System.IO;
 
 namespace FinalProject
 {
-    class Terrain : Microsoft.Xna.Framework.DrawableGameComponent
+    struct MapOffset
     {
+        public float TerrainLength;
+        public int left; // -x
+        public int right; // x
+        public int down; // z
+        public int up; // -z
+
+        public MapOffset(int l, int r, int d, int u, float tl)
+        {
+            left = l;
+            right = r;
+            down = d;
+            up = u;
+            TerrainLength = tl;
+        }
+    }
+
+    class Map
+    {
+        // string is a LRUP combo, determining which direction to render the piece from the center. 
+        public List<Terrain> terrainPieces;
+        public List<Vector3> startingPositions;
+
+        public Map(List<Terrain> t, List<Vector3> s)
+        {
+            terrainPieces = t;
+            startingPositions = s;
+        }
+
+        public Map()
+        {
+            terrainPieces = new List<Terrain>();
+            startingPositions = new List<Vector3>();
+        }
+    }
+
+    class Terrain // : Microsoft.Xna.Framework.DrawableGameComponent
+    {
+        GraphicsDevice GraphicsDevice;
+
+        Vector3 offset;
         public Camera camera;
-        Vector3 startPosition;
+        public Vector3 startPosition;
 
         int vertexCountX;
         // Number of vertices of Vertex Grid in X direction, equivilent to the width of the height map image in pixels
@@ -42,26 +82,25 @@ namespace FinalProject
         GraphicsDevice device;
 
         public Terrain(Game game, Camera camera)
-            : base(game)
         {
             this.camera = camera;
         }
 
-        public override void Initialize()
+        public void Load(string heightmapFileName, Texture2D texture, int vertexCountX, int vertexCountZ, float blockScale, float heightScale, MapOffset mapOffset, ContentManager Content, GraphicsDevice device)
         {
-            base.Initialize();
-        }
+            var o = mapOffset;
+            offset = new Vector3(o.right * o.TerrainLength - o.left * o.TerrainLength,
+                                  0, o.down * o.TerrainLength - o.up * o.TerrainLength);
 
-        public void Load(string heightmapFileName, Texture2D texture, int vertexCountX, int vertexCountZ, float blockScale, float heightScale)
-        {
-            effect = new BasicEffect(GraphicsDevice);
+            effect = new BasicEffect(device);
             this.texture = texture;
             this.vertexCountX = vertexCountX;
             this.vertexCountZ = vertexCountZ;
             this.blockScale = blockScale;
             this.heightScale = heightScale;
 
-            FileStream filestream = File.OpenRead(Game.Content.RootDirectory + "/" + heightmapFileName + ".raw");
+            GraphicsDevice = device;
+            FileStream filestream = File.OpenRead(Content.RootDirectory + "/" + heightmapFileName + ".raw");
 
             int heightmapSize = vertexCountX * vertexCountZ;
             this.heightmap = new byte[heightmapSize];
@@ -128,7 +167,7 @@ namespace FinalProject
                 tu = 0.0f;
                 for (float j = -halfTerrainWidth; j <= halfTerrainWidth; j += blockScale)
                 {
-                    vertices[vertexCount].Position = new Vector3(j, heightmap[vertexCount] * heightScale, i);
+                    vertices[vertexCount].Position = new Vector3(j, heightmap[vertexCount] * heightScale, i) + offset;
                     vertices[vertexCount].TextureCoordinate = new Vector2(tu, tv);
 
                     tu += tuDerivative;
@@ -138,13 +177,6 @@ namespace FinalProject
             }
 
             return vertices;
-        }
-
-        public override void Update(GameTime gameTime)
-        {
-            // TODO: Add your update code here
-
-            base.Update(gameTime);
         }
 
         public float getHeight(float x, float z)
@@ -236,9 +268,13 @@ namespace FinalProject
             return collisionDistance;
         }
 
-        public override void Draw(GameTime gameTime)
+        public void Draw(GameTime gameTime)
         {
-            effect.World = Matrix.Identity; //No transformation of the terrain
+            //if(offset == Vector3.Zero)
+                effect.World = Matrix.Identity; //No transformation of the terrain
+            //else
+                //effect.World = Matrix.CreateWorld(offset, Vector3.Forward, Vector3.Up);
+
             effect.View = camera.view;
             effect.Projection = camera.projection;
             effect.Texture = texture;
@@ -267,8 +303,6 @@ namespace FinalProject
                     nTriangles = (int)MathHelper.Min(numTriangles - i * 65535, 65535);
                 }
             }
-            
-            base.Draw(gameTime);
         }
     }
 }

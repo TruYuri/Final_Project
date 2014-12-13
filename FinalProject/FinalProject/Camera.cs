@@ -24,14 +24,14 @@ namespace FinalProject
         Vector3 velocity;
         bool jumping;
         MouseState prevMouseState;
-        List<Terrain> terrains;
+        Map map;
 
-        public Camera(Game game, Vector3 pos, Vector3 direction, Vector3 up, List<Terrain> t)
+        public Camera(Game game, Vector3 pos, Vector3 direction, Vector3 up, Map t)
         {
             Mouse.SetPosition(0, 0);
             prevMouseState = Mouse.GetState();
 
-            terrains = t;
+            map = t;
             cameraPosition = pos;
             cameraDirection = direction;
             cameraDirection.Normalize();
@@ -88,7 +88,7 @@ namespace FinalProject
                 // forward
                 var newPos = cameraPosition + forward;
                 newPos.Y = 1000.0f;
-                foreach (var t in terrains)
+                foreach (var t in map.terrainPieces)
                 {
                     height = t.Intersects(new Ray(newPos, Vector3.Down));
 
@@ -107,7 +107,7 @@ namespace FinalProject
                 // backward
                 newPos = cameraPosition - backward;
                 newPos.Y = 1000.0f;
-                foreach (var t in terrains)
+                foreach (var t in map.terrainPieces)
                 {
                     height = t.Intersects(new Ray(newPos, Vector3.Down));
 
@@ -125,7 +125,7 @@ namespace FinalProject
                 // left
                 newPos = cameraPosition - left;
                 newPos.Y = 1000.0f;
-                foreach (var t in terrains)
+                foreach (var t in map.terrainPieces)
                 {
                     height = t.Intersects(new Ray(newPos, Vector3.Down));
 
@@ -143,7 +143,7 @@ namespace FinalProject
                 // right
                 newPos = cameraPosition + right;
                 newPos.Y = 1000.0f;
-                foreach (var t in terrains)
+                foreach (var t in map.terrainPieces)
                 {
                     height = t.Intersects(new Ray(newPos, Vector3.Down));
 
@@ -178,7 +178,7 @@ namespace FinalProject
                 target.Y += ((Vi + velocity.Y) / 2) * time;
             }
 
-            foreach (var t in terrains)
+            foreach (var t in map.terrainPieces)
             {
                 height = t.Intersects(new Ray(cameraPosition, Vector3.Down));
 

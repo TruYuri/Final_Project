@@ -16,20 +16,19 @@ namespace FinalProject
     class Player
     {
         public string playerName;
-        Camera camera; // all movement
-        List<Terrain> terrains;
-        BasicModel model;
-
-        bool localPlayer;
-
         public Vector3 Position;
         public Vector3 Forward;
-        //public Quaternion Rotation;
-        public Player(Game game, Camera c, List<Terrain> t, bool local, BasicModel m, string n)
+
+        Camera camera; // all movement
+        Map map;
+        BasicModel model;
+        bool localPlayer;
+
+        public Player(Game game, Camera c, Map t, bool local, BasicModel m, string n)
         {
             playerName = n;
             camera = c;
-            terrains = t;
+            map = t;
             localPlayer = local;
             model = m;
         }
