@@ -26,12 +26,12 @@ namespace FinalProject
             speed = s;
         }
 
-        public virtual void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
 
         }
 
-        public virtual void Draw(Camera camera)
+        public override void Draw(Camera camera)
         {
 
         }

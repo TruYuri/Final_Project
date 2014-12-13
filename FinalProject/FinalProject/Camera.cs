@@ -18,7 +18,7 @@ namespace FinalProject
         public Matrix projection { get; protected set; }
 
         public Vector3 cameraPosition;
-        Vector3 cameraDirection;
+        public Vector3 cameraDirection;
         Vector3 cameraUp;
         Vector3 target;
         Vector3 velocity;

@@ -23,7 +23,7 @@ namespace FinalProject
         bool localPlayer;
 
         public Vector3 Position;
-        public Quaternion rotation;
+        public Vector3 Direction;
 
         public Player(Game game, Camera c, List<Terrain> t, bool local, BasicModel m, string n)
         {
@@ -40,12 +40,13 @@ namespace FinalProject
             {
                 camera.Update(gameTime);
                 Position = camera.cameraPosition;
-                rotation = Quaternion.CreateFromRotationMatrix(camera.view);
+                Direction = camera.cameraDirection;
             }
             else
             {
-                var matrix = Matrix.CreateFromQuaternion(rotation);
-                matrix.Translation = Position;
+                var matrix = Matrix.CreateLookAt(Position, Direction + Position, Vector3.Up);
+
+                //matrix.Translation = Position;
                 model.World = matrix;
             }
             // send network stuff
