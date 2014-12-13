@@ -12,7 +12,7 @@ using Microsoft.Xna.Framework.Net;
 
 namespace FinalProject
 {
-    public enum MessageType { UpdatePosition, WeaponFired, EndGame, StartGame, RejoinLobby, RestartGame, UpdateRemotePlayer }
+    public enum MessageType { UpdatePosition, WeaponFired, EndGame, StartGame, RejoinLobby, RestartGame, UpdateRemotePlayer, Died }
     public enum GameState
     {
         SignIn, FindSession,
@@ -31,7 +31,6 @@ namespace FinalProject
         PacketWriter packetWriter;
         PacketReader packetReader;
         GameState currentGameState;
-        int nextID = 0;
 
         public Game1()
         {
@@ -146,9 +145,28 @@ namespace FinalProject
                         case MessageType.WeaponFired:
                             WeaponFired();
                             break;
+                        case MessageType.Died:
+                            Died();
+                            break;
                         //Any other actions for specific messages
 
                     }
+                }
+            }
+        }
+
+        protected void Died()
+        {
+            // Get the other (non-local) player
+            string name = packetReader.ReadString();
+            foreach (var pl in players)
+            {
+                if (pl.playerName == name)
+                {
+                    pl.Delete();
+                    pl.alive = false;
+                    pl.health = 0;
+                    break;
                 }
             }
         }
@@ -255,12 +273,22 @@ namespace FinalProject
             {
                 if(!gamer.IsLocal)
                 {
-                    // Send message to other player with message tag and new position of local player
-                    packetWriter.Write((int)MessageType.UpdateRemotePlayer);
-                    packetWriter.Write(localPlayer.Position);
-                    packetWriter.Write(localPlayer.Forward);
+                    if (localPlayer.alive)
+                    {
+                        // Send message to other player with message tag and new position of local player
+                        packetWriter.Write((int)MessageType.UpdateRemotePlayer);
+                        packetWriter.Write(localPlayer.playerName);
+                        packetWriter.Write(localPlayer.Position);
+                        packetWriter.Write(localPlayer.Forward);
 
-                    localGamer.SendData(packetWriter, SendDataOptions.InOrder, gamer);
+                        localGamer.SendData(packetWriter, SendDataOptions.InOrder, gamer);
+                    }
+                    else
+                    {
+                        packetWriter.Write((int)MessageType.Died);
+                        packetWriter.Write(localPlayer.playerName);
+                        localGamer.SendData(packetWriter, SendDataOptions.Reliable, gamer);
+                    }
                 }
             }
 
@@ -270,19 +298,14 @@ namespace FinalProject
         protected void UpdateRemotePlayer(GameTime gameTime)
         {
             // Get the other (non-local) player
-            foreach (NetworkGamer gamer in networkSession.AllGamers)
+            string name = packetReader.ReadString();
+            foreach (var pl in players)
             {
-                if (!gamer.IsLocal)
+                if (pl.playerName == name)
                 {
-                    foreach (var pl in players)
-                    {
-                        if (gamer.DisplayName == pl.playerName)
-                        {
-                            pl.Position = packetReader.ReadVector3();
-                            pl.Forward = packetReader.ReadVector3();
-                            break;
-                        }
-                    }
+                    pl.Position = packetReader.ReadVector3();
+                    pl.Forward = packetReader.ReadVector3();
+                    break;
                 }
             }
         }

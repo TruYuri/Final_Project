@@ -15,6 +15,9 @@ namespace FinalProject
 {
     class Player
     {
+        public int health;
+        public int shield;
+        public bool alive;
         public string playerName;
         public Vector3 Position;
         public Vector3 Forward;
@@ -32,9 +35,9 @@ namespace FinalProject
             localPlayer = local;
 
             if(local)
-                gameObject = new GameObject(m, false);
+                gameObject = new GameObject(m, false, "vehicle");
             else
-                gameObject = new GameObject(m, true);
+                gameObject = new GameObject(m, true, "vehicle");
         }
 
         public void Initialize()
@@ -49,14 +52,25 @@ namespace FinalProject
         {
             if (localPlayer)
             {
-                camera.update_clone();
+                //camera.update_clone();
                 var oldPos = camera.view;
                 var oldTar = camera.target;
                 camera.Update(gameTime);
 
-                if (GameObjectManager.Instance.CheckCollision(gameObject))
+                var colliders = GameObjectManager.Instance.CheckCollision(gameObject);
+
+                foreach (var collider in colliders)
                 {
-                    camera.assume_clone();
+                    switch(collider.type)
+                    {
+                        case "vehicle":
+                            alive = false;
+                            Delete();
+                            break;
+                        case "projectile":
+                            //health = min()
+                            break;
+                    }
                 }
 
                 Position = camera.cameraPosition;
