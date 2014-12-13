@@ -49,15 +49,14 @@ namespace FinalProject
         {
             if (localPlayer)
             {
+                Camera cam2 = camera.clone();
                 var oldPos = camera.view;
                 var oldTar = camera.target;
                 camera.Update(gameTime);
 
                 if (GameObjectManager.Instance.CheckCollision(gameObject))
                 {
-                    camera.target = oldTar;
-                    camera.view = oldPos;
-                    camera.cameraPosition = oldPos.Translation;
+                    camera = cam2;
                 }
 
                 Position = camera.cameraPosition;

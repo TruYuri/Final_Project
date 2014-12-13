@@ -43,6 +43,25 @@ namespace FinalProject
             CreateLookAt();
         }
 
+        private Camera(Matrix v, Matrix p, Vector3 cP, Vector3 cD, Vector3 cU, Vector3 t, Vector3 v2, bool j, MouseState pMS, Map m)
+        {
+            view = v;
+            projection = p;
+            cameraPosition = cP;
+            cameraDirection = cD;
+            cameraUp = cU;
+            target = t;
+            velocity = v2;
+            jumping = j;
+            prevMouseState = pMS;
+            map = m;
+        }
+
+        public Camera clone()
+        {
+            return new Camera(view, projection, cameraPosition, cameraDirection, cameraUp, target, velocity, jumping, prevMouseState, map);
+        }
+
         private void CreateLookAt()
         {
             view = Matrix.CreateLookAt(cameraPosition, target, cameraUp);
