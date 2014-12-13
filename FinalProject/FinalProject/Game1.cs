@@ -202,7 +202,7 @@ namespace FinalProject
                 currentGameState = GameState.InGame;
         }
 
-        private object CreateLocalPlayer(string name)
+        private void InitializeLevel()
         {
             map = new Map();
             
@@ -214,10 +214,6 @@ namespace FinalProject
             if(gom == null)
                 gom = new GameObjectManager(this, camera);
             Components.Add(gom);
-
-            localPlayer = new Player(this, camera, map, true,
-                                     new BasicModel(Content.Load<Model>("spaceship"), new Vector3(0, 600, 0)), name);
-            localPlayer.Initialize();
 
             Terrain center = new Terrain(this, camera);
             center.Load("image", Content.Load<Texture2D>("Map_c"), 256, 256, 5.0f, 1.0f, new MapOffset(), Content, GraphicsDevice);
@@ -245,18 +241,23 @@ namespace FinalProject
             map.terrainPieces.Add(right);
             map.terrainPieces.Add(up);
             map.terrainPieces.Add(down);
+        }
+
+        private object CreateLocalPlayer(string name)
+        {
+            InitializeLevel();
+
+            localPlayer = new Player(this, camera, map, true,
+                                     new BasicModel(Content.Load<Model>("spaceship"), new Vector3(0, 600, 0)), name);
+            localPlayer.Initialize();
 
             return localPlayer;
         }
 
         private object CreateRemotePlayer(string name)
         {
-            if (GameObjectManager.Instance == null)
-            {
-                if(camera == null)
-                    camera = new Camera(this, new Vector3(0, 600, 0), new Vector3(0, 0, 1), new Vector3(0, 1, 0), map);
-                Components.Add(new GameObjectManager(this, camera));
-            }
+            InitializeLevel();
+
             Player remote = new Player(this, camera, map, false, new BasicModel(Content.Load<Model>("spaceship"), new Vector3(0, 600, 0)), name);
             players.Add(remote);
             return remote;
