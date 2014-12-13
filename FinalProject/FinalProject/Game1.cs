@@ -159,13 +159,14 @@ namespace FinalProject
         {
             // Get the other (non-local) player
             string name = packetReader.ReadString();
-            foreach (var pl in players)
+            foreach (var gamer in networkSession.AllGamers)
             {
-                if (pl.playerName == name)
+                if (gamer.Gamertag == name)
                 {
-                    pl.Delete();
-                    pl.alive = false;
-                    pl.health = 0;
+                    Player p2 = ((Player)gamer.Tag);
+                    p2.Delete();
+                    p2.alive = false;
+                    p2.health = 0;
                     break;
                 }
             }
@@ -197,12 +198,12 @@ namespace FinalProject
 	      //The Create players will create and return instances of your player class, setting
 	      //the appropriate values to differentiate between local and remote players
 	      //Tag is of type Object, which means it can hold any type
-                e.Gamer.Tag = CreateLocalPlayer(e.Gamer.DisplayName);
+                e.Gamer.Tag = CreateLocalPlayer(e.Gamer.Gamertag);
                 currentGameState = GameState.InGame;
             }
             else
             {
-                e.Gamer.Tag = CreateRemotePlayer(e.Gamer.DisplayName);
+                e.Gamer.Tag = CreateRemotePlayer(e.Gamer.Gamertag);
             }
         }
 
@@ -299,12 +300,13 @@ namespace FinalProject
         {
             // Get the other (non-local) player
             string name = packetReader.ReadString();
-            foreach (var pl in players)
+            foreach (var gamer in networkSession.AllGamers)
             {
-                if (pl.playerName == name)
+                if (gamer.Gamertag == name)
                 {
-                    pl.Position = packetReader.ReadVector3();
-                    pl.Forward = packetReader.ReadVector3();
+                    Player p2 = ((Player)gamer.Tag);
+                    p2.Position = packetReader.ReadVector3();
+                    p2.Forward = packetReader.ReadVector3();
                     break;
                 }
             }

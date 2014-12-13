@@ -33,7 +33,7 @@ namespace FinalProject
             camera = c;
             map = t;
             localPlayer = local;
-
+            alive = true;
             if(local)
                 gameObject = new GameObject(m, false, "vehicle");
             else
