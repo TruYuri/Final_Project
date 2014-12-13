@@ -256,14 +256,8 @@ namespace FinalProject
 
                 if (!gamer.IsLocal)
                 {
-                    foreach(var player in players)
-                    {
-                        if (player.ID == theOtherPlayer.ID)
-                        {
-                            theOtherPlayer.Position = packetReader.ReadVector3();
-                            theOtherPlayer.YPR = packetReader.ReadVector3();
-                        }
-                    }
+                    theOtherPlayer.Position = packetReader.ReadVector3();
+                    theOtherPlayer.YPR = packetReader.ReadVector3();
                 }
             }
         }
