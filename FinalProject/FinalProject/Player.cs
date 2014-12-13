@@ -40,11 +40,11 @@ namespace FinalProject
             {
                 camera.Update(gameTime);
                 Position = camera.cameraPosition;
-                Forward = camera.view.Forward;
+                Forward = camera.target;
             }
             else
             {
-                var matrix = Matrix.CreateWorld(Position, Forward, Vector3.Zero);
+                var matrix = Matrix.CreateWorld(Position, -(Forward - Position), Vector3.Up);
                 model.World = matrix;
             }
             // send network stuff
