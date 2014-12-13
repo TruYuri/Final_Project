@@ -45,12 +45,12 @@ namespace FinalProject
                 var oldTar = camera.target;
                 camera.Update(gameTime);
 
-                if (GameObjectManager.Instance.CheckCollision(gameObject))
+                /*if (GameObjectManager.Instance.CheckCollision(gameObject))
                 {
                     camera.target = oldTar;
                     camera.view = oldPos;
                     camera.cameraPosition = oldPos.Translation;
-                }
+                }*/
 
                 Position = camera.cameraPosition;
                 Forward = camera.target;
@@ -61,6 +61,11 @@ namespace FinalProject
                 var matrix = Matrix.CreateWorld(Position, -(Forward - Position), Vector3.Up);
                 gameObject.world = matrix;
             }
+        }
+
+        public void Delete()
+        {
+            GameObjectManager.Instance.RemoveGameObject(gameObject);
         }
 
         public void Draw()

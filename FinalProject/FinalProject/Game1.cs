@@ -316,11 +316,23 @@ namespace FinalProject
             networkSession.Dispose();
             networkSession = null;
 
-		     //Perform any necessary clean up,
-		     //stop sound track, etc.
+            Player player = null;
+            foreach (var pl in players)
+            {
+                //Perform any necessary clean up,
+                //stop sound track, etc.
+
+                if (e.Gamer.DisplayName == pl.playerName)
+                {
+                    player = pl;
+                    player.Delete();
+                    break;
+                }
+            }
+            players.Remove(player);
         
-		     //Go back to looking for another session
-		     currentGameState = GameState.FindSession;
+		    //Go back to looking for another session
+		    currentGameState = GameState.FindSession;
         }
 
         private void Update_GameOver(GameTime gameTime)
