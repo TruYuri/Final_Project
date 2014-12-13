@@ -15,7 +15,7 @@ namespace FinalProject
 {
     class Player
     {
-        public int ID;
+        public string playerName;
         Camera camera; // all movement
         List<Terrain> terrains;
         BasicModel model;
@@ -24,13 +24,13 @@ namespace FinalProject
         public Vector3 Position;
         public Vector3 YPR;
 
-        public Player(Game game, Camera c, List<Terrain> t, bool local, BasicModel m, int i)
+        public Player(Game game, Camera c, List<Terrain> t, bool local, BasicModel m, string n)
         {
+            playerName = n;
             camera = c;
             terrains = t;
             localPlayer = local;
             model = m;
-            ID = i;
         }
 
         public void Update(GameTime gameTime)

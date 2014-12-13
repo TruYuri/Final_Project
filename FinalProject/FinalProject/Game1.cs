@@ -181,19 +181,19 @@ namespace FinalProject
 	      //The Create players will create and return instances of your player class, setting
 	      //the appropriate values to differentiate between local and remote players
 	      //Tag is of type Object, which means it can hold any type
-                e.Gamer.Tag = CreateLocalPlayer();
+                e.Gamer.Tag = CreateLocalPlayer(e.Gamer.DisplayName);
                 currentGameState = GameState.InGame;
             }
             else
             {
-                e.Gamer.Tag = CreateRemotePlayer();
+                e.Gamer.Tag = CreateRemotePlayer(e.Gamer.DisplayName);
             }
         }
 
-        private object CreateLocalPlayer()
+        private object CreateLocalPlayer(string name)
         {
             camera = new Camera(this, new Vector3(0, 600, 0), new Vector3(0, 0, 1), new Vector3(0, 1, 0), terrain);
-            localPlayer = new Player(this, camera, terrain, true, null, nextID++);
+            localPlayer = new Player(this, camera, terrain, true, null, name);
 
             terrain.Add(new Terrain(this, camera));
             Components.Clear();
@@ -209,9 +209,9 @@ namespace FinalProject
             return localPlayer;
         }
 
-        private object CreateRemotePlayer()
+        private object CreateRemotePlayer(string name)
         {
-            Player remote = new Player(this, camera, terrain, false, new BasicModel(Content.Load<Model>("spaceship"), new Vector3(0, 600, 0)), nextID++);
+            Player remote = new Player(this, camera, terrain, false, new BasicModel(Content.Load<Model>("spaceship"), new Vector3(0, 600, 0)), name);
             players.Add(remote);
             return remote;
         }
@@ -256,8 +256,15 @@ namespace FinalProject
 
                 if (!gamer.IsLocal)
                 {
-                    theOtherPlayer.Position = packetReader.ReadVector3();
-                    theOtherPlayer.YPR = packetReader.ReadVector3();
+                    foreach (var pl in players)
+                    {
+                        if (gamer.DisplayName == pl.playerName)
+                        {
+                            theOtherPlayer.Position = packetReader.ReadVector3();
+                            theOtherPlayer.YPR = packetReader.ReadVector3();
+                            break;
+                        }
+                    }
                 }
             }
         }
