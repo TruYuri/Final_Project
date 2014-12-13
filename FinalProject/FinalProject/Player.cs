@@ -72,19 +72,23 @@ namespace FinalProject
 
                 Position = camera.cameraPosition;
                 Forward = camera.target;
-                gameObject.world = Matrix.CreateWorld(Position, -(Forward - Position), Vector3.Up);
+
+                if(gameObject != null)
+                    gameObject.world = Matrix.CreateWorld(Position, -(Forward - Position), Vector3.Up);
             }
             else
             {
-                var matrix = Matrix.CreateWorld(Position, -(Forward - Position), Vector3.Up);
-                gameObject.world = matrix;
-                gameObject.Update(gameTime);
+                if (gameObject != null)
+                {
+                    gameObject.world = Matrix.CreateWorld(Position, -(Forward - Position), Vector3.Up);
+                }
             }
         }
 
         public void Delete()
         {
             GameObjectManager.Instance.RemoveGameObject(gameObject);
+            gameObject = null;
         }
 
         public void Draw()

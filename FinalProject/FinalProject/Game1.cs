@@ -281,7 +281,7 @@ namespace FinalProject
             {
                 if(!gamer.IsLocal)
                 {
-                    //if (localPlayer.alive)
+                    if (localPlayer.alive)
                     {
                         // Send message to other player with message tag and new position of local player
                         packetWriter.Write((int)MessageType.UpdateRemotePlayer);
@@ -291,12 +291,12 @@ namespace FinalProject
 
                         localGamer.SendData(packetWriter, SendDataOptions.InOrder, gamer);
                     }
-                    /*else
+                    else
                     {
                         packetWriter.Write((int)MessageType.Died);
                         packetWriter.Write(localPlayer.name);
                         localGamer.SendData(packetWriter, SendDataOptions.ReliableInOrder, gamer);
-                    }*/
+                    }
                 }
             }
 
