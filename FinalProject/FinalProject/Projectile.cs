@@ -15,7 +15,6 @@ namespace FinalProject
 {
     class Projectile : GameObject
     {
-        BasicModel model;
         Vector3 dir;
         float speed;
         float timeToLive;
@@ -27,12 +26,12 @@ namespace FinalProject
             speed = s;
         }
 
-        public void Update(GameTime gameTime)
+        public virtual void Update(GameTime gameTime)
         {
 
         }
 
-        public void Draw(Camera camera)
+        public virtual void Draw(Camera camera)
         {
 
         }

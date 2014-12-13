@@ -39,10 +39,13 @@ namespace FinalProject
             {
                 camera.Update(gameTime);
                 Position = camera.cameraPosition;
+                YPR.X = (float)Math.Atan2(-camera.view.M31, Math.Sqrt(camera.view.M32 * camera.view.M32 + camera.view.M33 * camera.view.M33));
+                YPR.Y = (float)Math.Atan2(camera.view.M32, camera.view.M32);
+                YPR.Z = (float)Math.Atan2(camera.view.M21, camera.view.M11);
             }
             else
             {
-                model.World = Matrix.CreateTranslation(Position);
+                model.World = Matrix.CreateFromYawPitchRoll(YPR.X, YPR.Y, YPR.Z) + Matrix.CreateTranslation(Position);
             }
             // send network stuff
         }

@@ -13,9 +13,11 @@ using Microsoft.Xna.Framework.Net;
 
 namespace FinalProject
 {
-    interface GameObject
+    class GameObject
     {
-        void Update(GameTime gameTime);
-        void Draw(Camera camera);
+        public BasicModel model;
+        public Matrix world;
+        public virtual void Update(GameTime gameTime) {}
+        public virtual void Draw(Camera camera) {}
     }
 }

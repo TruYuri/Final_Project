@@ -251,17 +251,14 @@ namespace FinalProject
             // Get the other (non-local) player
             foreach (NetworkGamer gamer in networkSession.AllGamers)
             {
-                Player theOtherPlayer;
-                theOtherPlayer = ((Player)gamer.Tag);
-
                 if (!gamer.IsLocal)
                 {
                     foreach (var pl in players)
                     {
                         if (gamer.DisplayName == pl.playerName)
                         {
-                            theOtherPlayer.Position = packetReader.ReadVector3();
-                            theOtherPlayer.YPR = packetReader.ReadVector3();
+                            pl.Position = packetReader.ReadVector3();
+                            pl.YPR = packetReader.ReadVector3();
                             break;
                         }
                     }
