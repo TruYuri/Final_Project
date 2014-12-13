@@ -18,7 +18,7 @@ namespace FinalProject
         public int health;
         public int shield;
         public bool alive;
-        public string displayName;
+        public byte id;
         public Vector3 Position;
         public Vector3 Forward;
 
@@ -27,9 +27,9 @@ namespace FinalProject
         GameObject gameObject;
         bool localPlayer;
 
-        public Player(Game game, Camera c, Map t, bool local, BasicModel m, string name)
+        public Player(Game game, Camera c, Map t, bool local, BasicModel m, byte i)
         {
-            displayName = name;
+            id = i;
             camera = c;
             map = t;
             localPlayer = local;

@@ -158,10 +158,10 @@ namespace FinalProject
         protected void Died()
         {
             // Get the other (non-local) player
-            string name = packetReader.ReadString();
+            byte id = packetReader.ReadByte();
             foreach (var gamer in networkSession.AllGamers)
             {
-                if (gamer.DisplayName == name)
+                if (gamer.Id == id)
                 {
                     Player p2 = ((Player)gamer.Tag);
                     p2.Delete();
@@ -197,16 +197,16 @@ namespace FinalProject
 	      //The Create players will create and return instances of your player class, setting
 	      //the appropriate values to differentiate between local and remote players
 	      //Tag is of type Object, which means it can hold any type
-                e.Gamer.Tag = CreateLocalPlayer(e.Gamer.DisplayName);
+                e.Gamer.Tag = CreateLocalPlayer(e.Gamer.Id);
                 currentGameState = GameState.InGame;
             }
             else
             {
-                e.Gamer.Tag = CreateRemotePlayer(e.Gamer.DisplayName);
+                e.Gamer.Tag = CreateRemotePlayer(e.Gamer.Id);
             }
         }
 
-        private object CreateLocalPlayer(string name)
+        private object CreateLocalPlayer(byte id)
         {
             map = new Map();
             camera = new Camera(this, new Vector3(0, 600, 0), new Vector3(0, 0, 1), new Vector3(0, 1, 0), map);
@@ -215,7 +215,7 @@ namespace FinalProject
             Components.Add(new GameObjectManager(this, camera));
 
             localPlayer = new Player(this, camera, map, true,
-                                     new BasicModel(Content.Load<Model>("spaceship"), new Vector3(0, 600, 0)), name);
+                                     new BasicModel(Content.Load<Model>("spaceship"), new Vector3(0, 600, 0)), id);
             localPlayer.Initialize();
 
             Terrain center = new Terrain(this, camera);
@@ -248,9 +248,9 @@ namespace FinalProject
             return localPlayer;
         }
 
-        private object CreateRemotePlayer(string name)
+        private object CreateRemotePlayer(byte id)
         {
-            Player remote = new Player(this, camera, map, false, new BasicModel(Content.Load<Model>("spaceship"), new Vector3(0, 600, 0)), name);
+            Player remote = new Player(this, camera, map, false, new BasicModel(Content.Load<Model>("spaceship"), new Vector3(0, 600, 0)), id);
             players.Add(remote);
             return remote;
         }
@@ -277,7 +277,7 @@ namespace FinalProject
                     {
                         // Send message to other player with message tag and new position of local player
                         packetWriter.Write((int)MessageType.UpdateRemotePlayer);
-                        packetWriter.Write(localPlayer.displayName);
+                        packetWriter.Write(localPlayer.id);
                         packetWriter.Write(localPlayer.Position);
                         packetWriter.Write(localPlayer.Forward);
 
@@ -286,7 +286,7 @@ namespace FinalProject
                     else
                     {
                         packetWriter.Write((int)MessageType.Died);
-                        packetWriter.Write(localPlayer.displayName);
+                        packetWriter.Write(localPlayer.id);
                         localGamer.SendData(packetWriter, SendDataOptions.ReliableInOrder, gamer);
                     }
                 }
@@ -298,10 +298,10 @@ namespace FinalProject
         protected void UpdateRemotePlayer(GameTime gameTime)
         {
             // Get the other (non-local) player
-            string name = packetReader.ReadString();
+            byte id = packetReader.ReadByte();
             foreach (var gamer in players)
             {
-                if (gamer.displayName == name)
+                if (gamer.id == id)
                 {
                     gamer.Position = packetReader.ReadVector3();
                     gamer.Forward = packetReader.ReadVector3();
@@ -346,7 +346,7 @@ namespace FinalProject
                 //Perform any necessary clean up,
                 //stop sound track, etc.
 
-                if (e.Gamer.DisplayName == pl.displayName)
+                if (e.Gamer.Id == pl.id)
                 {
                     player = pl;
                     player.Delete();
