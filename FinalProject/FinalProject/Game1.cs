@@ -192,27 +192,28 @@ namespace FinalProject
         {
             // Gamer joined. Set the tag for the gamer to a new UserControlledObject.
             // These Tags are going to be your local representation of remote players
-            if (e.Gamer.IsLocal)
-            {
-	      //The Create players will create and return instances of your player class, setting
-	      //the appropriate values to differentiate between local and remote players
-	      //Tag is of type Object, which means it can hold any type
+
+            if(e.Gamer.IsLocal)
                 e.Gamer.Tag = CreateLocalPlayer(e.Gamer.Gamertag);
-                currentGameState = GameState.InGame;
-            }
             else
-            {
                 e.Gamer.Tag = CreateRemotePlayer(e.Gamer.Gamertag);
-            }
+
+            if (e.Gamer.IsHost)
+                currentGameState = GameState.InGame;
         }
 
         private object CreateLocalPlayer(string name)
         {
             map = new Map();
-            camera = new Camera(this, new Vector3(0, 600, 0), new Vector3(0, 0, 1), new Vector3(0, 1, 0), map);
+            
+            if(camera == null)
+                camera = new Camera(this, new Vector3(0, 600, 0), new Vector3(0, 0, 1), new Vector3(0, 1, 0), map);
 
+            var gom = GameObjectManager.Instance;
             Components.Clear();
-            Components.Add(new GameObjectManager(this, camera));
+            if(gom == null)
+                gom = new GameObjectManager(this, camera);
+            Components.Add(gom);
 
             localPlayer = new Player(this, camera, map, true,
                                      new BasicModel(Content.Load<Model>("spaceship"), new Vector3(0, 600, 0)), name);
@@ -250,6 +251,12 @@ namespace FinalProject
 
         private object CreateRemotePlayer(string name)
         {
+            if (GameObjectManager.Instance == null)
+            {
+                if(camera == null)
+                    camera = new Camera(this, new Vector3(0, 600, 0), new Vector3(0, 0, 1), new Vector3(0, 1, 0), map);
+                Components.Add(new GameObjectManager(this, camera));
+            }
             Player remote = new Player(this, camera, map, false, new BasicModel(Content.Load<Model>("spaceship"), new Vector3(0, 600, 0)), name);
             players.Add(remote);
             return remote;
@@ -273,7 +280,7 @@ namespace FinalProject
             {
                 if(!gamer.IsLocal)
                 {
-                    if (localPlayer.alive)
+                    //if (localPlayer.alive)
                     {
                         // Send message to other player with message tag and new position of local player
                         packetWriter.Write((int)MessageType.UpdateRemotePlayer);
@@ -283,12 +290,12 @@ namespace FinalProject
 
                         localGamer.SendData(packetWriter, SendDataOptions.InOrder, gamer);
                     }
-                    else
+                    /*else
                     {
                         packetWriter.Write((int)MessageType.Died);
                         packetWriter.Write(localPlayer.name);
                         localGamer.SendData(packetWriter, SendDataOptions.ReliableInOrder, gamer);
-                    }
+                    }*/
                 }
             }
 
