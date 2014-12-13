@@ -18,11 +18,14 @@ namespace FinalProject
         public BasicModel model;
         public Matrix world;
         public BoundingSphere sphere;
+        bool drawModel;
 
-        public GameObject(BasicModel m) 
-        { 
+        public GameObject(BasicModel m, bool draw) 
+        {
+            drawModel = draw;
             model = m;
-            sphere = model.model.Meshes[0].BoundingSphere;
+            if(model != null)
+                sphere = model.model.Meshes[0].BoundingSphere;
 
             GameObjectManager.Instance.AddGameObject(this);
         }
@@ -33,9 +36,9 @@ namespace FinalProject
                 model.World = world;
         }
 
-        public virtual void Draw(Camera c) 
+        public virtual void Draw(Camera c)
         {
-            if (model != null)
+            if (model != null && drawModel)
                 model.Draw(c);
         }
     }

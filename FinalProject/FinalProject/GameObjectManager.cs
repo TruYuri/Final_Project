@@ -35,6 +35,7 @@ namespace FinalProject
 
         public GameObjectManager(Game game, Camera c) : base(game)
         {
+            instance = this;
             gameObjects = new List<GameObject>();
             camera = c;
         }

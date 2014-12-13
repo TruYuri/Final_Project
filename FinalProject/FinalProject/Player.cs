@@ -30,7 +30,11 @@ namespace FinalProject
             camera = c;
             map = t;
             localPlayer = local;
-            gameObject = new GameObject(m);
+
+            if(local)
+                gameObject = new GameObject(m, false);
+            else
+                gameObject = new GameObject(m, true);
         }
 
         public void Update(GameTime gameTime)

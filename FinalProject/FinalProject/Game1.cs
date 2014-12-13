@@ -190,9 +190,13 @@ namespace FinalProject
 
         private object CreateLocalPlayer(string name)
         {
+            Components.Clear();
+            Components.Add(new GameObjectManager(this, camera));
+
             map = new Map();
             camera = new Camera(this, new Vector3(0, 600, 0), new Vector3(0, 0, 1), new Vector3(0, 1, 0), map);
-            localPlayer = new Player(this, camera, map, true, null, name);
+            localPlayer = new Player(this, camera, map, true,
+                                     new BasicModel(Content.Load<Model>("spaceship"), new Vector3(0, 600, 0)), name);
 
             Terrain center = new Terrain(this, camera);
             center.Load("image", Content.Load<Texture2D>("Map_c"), 256, 256, 5.0f, 1.0f, new MapOffset(), Content, GraphicsDevice);
@@ -220,9 +224,6 @@ namespace FinalProject
             map.terrainPieces.Add(right);
             map.terrainPieces.Add(up);
             map.terrainPieces.Add(down);
-            Components.Clear();
-
-            Components.Add(new GameObjectManager(this, camera));
 
             return localPlayer;
         }
