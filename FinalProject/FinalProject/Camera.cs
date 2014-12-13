@@ -14,6 +14,36 @@ namespace FinalProject
 {
     class Camera
     {
+        private struct clone
+        {
+            public Matrix view;
+            public Matrix projection;
+            public Vector3 cameraPosition;
+            public Vector3 cameraDirection;
+            public Vector3 cameraUp;
+            public Vector3 target;
+            public Vector3 velocity;
+            public bool jumping;
+            public MouseState prevMouseState;
+            public Map map;
+
+            public clone(Matrix v, Matrix p, Vector3 cP, Vector3 cD, Vector3 cU, Vector3 t, Vector3 v2, bool j, MouseState pMS, Map m)
+            {
+                view = v;
+                projection = p;
+                cameraPosition = cP;
+                cameraDirection = cD;
+                cameraUp = cU;
+                target = t;
+                velocity = v2;
+                jumping = j;
+                prevMouseState = pMS;
+                map = m;
+            }
+        }
+
+        clone cclone;
+
         public Matrix view { get; set; }
         public Matrix projection { get; protected set; }
 
@@ -43,23 +73,23 @@ namespace FinalProject
             CreateLookAt();
         }
 
-        private Camera(Matrix v, Matrix p, Vector3 cP, Vector3 cD, Vector3 cU, Vector3 t, Vector3 v2, bool j, MouseState pMS, Map m)
+        public void update_clone()
         {
-            view = v;
-            projection = p;
-            cameraPosition = cP;
-            cameraDirection = cD;
-            cameraUp = cU;
-            target = t;
-            velocity = v2;
-            jumping = j;
-            prevMouseState = pMS;
-            map = m;
+            cclone = new clone(view, projection, cameraPosition, cameraDirection, cameraUp, target, velocity, jumping, prevMouseState, map);
         }
 
-        public Camera clone()
+        public void assume_clone()
         {
-            return new Camera(view, projection, cameraPosition, cameraDirection, cameraUp, target, velocity, jumping, prevMouseState, map);
+            view = cclone.view;
+            projection = cclone.projection;
+            cameraPosition = cclone.cameraPosition;
+            cameraDirection = cclone.cameraDirection;
+            cameraUp = cclone.cameraUp;
+            target = cclone.target;
+            velocity = cclone.velocity;
+            jumping = cclone.jumping;
+            prevMouseState = cclone.prevMouseState;
+            map = cclone.map;
         }
 
         private void CreateLookAt()
