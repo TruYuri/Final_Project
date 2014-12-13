@@ -23,8 +23,7 @@ namespace FinalProject
         bool localPlayer;
 
         public Vector3 Position;
-        public Vector3 Direction;
-
+        public Quaternion Rotation;
         public Player(Game game, Camera c, List<Terrain> t, bool local, BasicModel m, string n)
         {
             playerName = n;
@@ -40,13 +39,25 @@ namespace FinalProject
             {
                 camera.Update(gameTime);
                 Position = camera.cameraPosition;
-                Direction = camera.cameraDirection;
+                Rotation = Quaternion.CreateFromRotationMatrix(camera.view);
             }
             else
             {
-                var matrix = Matrix.CreateLookAt(Position, Direction + Position, Vector3.Up);
+                float q0 = Rotation.W;
+                float q1 = Rotation.Y;
+                float q2 = Rotation.X;
+                float q3 = Rotation.Z;
+                Vector3 radAngles = new Vector3();
+                radAngles.X = (float)Math.Atan2(2 * (q0 * q1 + q2 * q3), 1 - 2 * (Math.Pow(q1, 2) + Math.Pow(q2, 2)));
+                radAngles.Y = (float)Math.Asin(2 * (q0 * q2 - q3 * q1));
+                radAngles.Z = (float)Math.Atan2(2 * (q0 * q3 + q1 * q2), 1 - 2 * (Math.Pow(q2, 2) + Math.Pow(q3, 2)));
+                Vector3 angles = new Vector3();
+                angles.X = MathHelper.ToDegrees(radAngles.X);
+                angles.Y = MathHelper.ToDegrees(radAngles.Y);
+                angles.Z = MathHelper.ToDegrees(radAngles.Z);
 
-                //matrix.Translation = Position;
+                var matrix = Matrix.CreateFromYawPitchRoll(radAngles.Y, radAngles.X, radAngles.Z);
+                matrix.Translation = Position;
                 model.World = matrix;
             }
             // send network stuff
