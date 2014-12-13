@@ -190,11 +190,12 @@ namespace FinalProject
 
         private object CreateLocalPlayer(string name)
         {
+            map = new Map();
+            camera = new Camera(this, new Vector3(0, 600, 0), new Vector3(0, 0, 1), new Vector3(0, 1, 0), map);
+
             Components.Clear();
             Components.Add(new GameObjectManager(this, camera));
 
-            map = new Map();
-            camera = new Camera(this, new Vector3(0, 600, 0), new Vector3(0, 0, 1), new Vector3(0, 1, 0), map);
             localPlayer = new Player(this, camera, map, true,
                                      new BasicModel(Content.Load<Model>("spaceship"), new Vector3(0, 600, 0)), name);
 

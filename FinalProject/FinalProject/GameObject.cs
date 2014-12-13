@@ -25,15 +25,20 @@ namespace FinalProject
             drawModel = draw;
             model = m;
             if(model != null)
-                sphere = model.model.Meshes[0].BoundingSphere;
+                sphere = new BoundingSphere(model.model.Meshes[0].BoundingSphere.Center, 
+                                            model.model.Meshes[0].BoundingSphere.Radius);
 
             GameObjectManager.Instance.AddGameObject(this);
         }
 
         public virtual void Update(GameTime gameTime) 
         {
-            if(model != null)
+            if (model != null)
+            {
                 model.World = world;
+                sphere = new BoundingSphere(world.Translation,
+                                            model.model.Meshes[0].BoundingSphere.Radius);
+            }
         }
 
         public virtual void Draw(Camera c)

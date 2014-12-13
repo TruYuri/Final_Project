@@ -55,13 +55,11 @@ namespace FinalProject
                 Position = camera.cameraPosition;
                 Forward = camera.target;
                 gameObject.world = camera.view;
-                gameObject.Update(gameTime);
             }
             else
             {
                 var matrix = Matrix.CreateWorld(Position, -(Forward - Position), Vector3.Up);
                 gameObject.world = matrix;
-                gameObject.Update(gameTime);
             }
         }
 
