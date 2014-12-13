@@ -31,6 +31,7 @@ namespace FinalProject
         PacketWriter packetWriter;
         PacketReader packetReader;
         GameState currentGameState;
+        byte id = 0;
 
         public Game1()
         {
@@ -159,15 +160,15 @@ namespace FinalProject
         {
             // Get the other (non-local) player
             byte id = packetReader.ReadByte();
-            foreach (var gamer in networkSession.AllGamers)
+            //foreach (var gamer in networkSession.AllGamers)
             {
-                if (gamer.Id == id)
+                //if (gamer.Id == id)
                 {
-                    Player p2 = ((Player)gamer.Tag);
+                    Player p2 = ((Player)networkSession.FindGamerById(id).Tag);
                     p2.Delete();
                     p2.alive = false;
                     p2.health = 0;
-                    break;
+                    //break;
                 }
             }
         }
@@ -299,13 +300,13 @@ namespace FinalProject
         {
             // Get the other (non-local) player
             byte id = packetReader.ReadByte();
-            foreach (var gamer in players)
+            //foreach (var gamer in players)
             {
-                if (gamer.id == id)
+                //if (gamer.id == id)
                 {
-                    gamer.Position = packetReader.ReadVector3();
-                    gamer.Forward = packetReader.ReadVector3();
-                    break;
+                    Player p2 = ((Player)networkSession.FindGamerById(id).Tag);
+                    p2.Position = packetReader.ReadVector3();
+                    p2.Forward = packetReader.ReadVector3();
                 }
             }
         }
@@ -340,19 +341,19 @@ namespace FinalProject
             networkSession.Dispose();
             networkSession = null;
 
-            Player player = null;
-            foreach (var pl in players)
-            {
+            Player player = ((Player)networkSession.FindGamerById(e.Gamer.Id).Tag);
+            //foreach (var pl in players)
+            //{
                 //Perform any necessary clean up,
                 //stop sound track, etc.
 
-                if (e.Gamer.Id == pl.id)
+                //if (e.Gamer.Id == pl.id)
                 {
-                    player = pl;
+                    //player = pl;
                     player.Delete();
-                    break;
+                    //break;
                 }
-            }
+            //}
             players.Remove(player);
         
 		    //Go back to looking for another session
