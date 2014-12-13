@@ -198,6 +198,7 @@ namespace FinalProject
 
             localPlayer = new Player(this, camera, map, true,
                                      new BasicModel(Content.Load<Model>("spaceship"), new Vector3(0, 600, 0)), name);
+            localPlayer.Initialize();
 
             Terrain center = new Terrain(this, camera);
             center.Load("image", Content.Load<Texture2D>("Map_c"), 256, 256, 5.0f, 1.0f, new MapOffset(), Content, GraphicsDevice);

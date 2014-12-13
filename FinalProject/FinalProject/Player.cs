@@ -37,6 +37,14 @@ namespace FinalProject
                 gameObject = new GameObject(m, true);
         }
 
+        public void Initialize()
+        {
+            camera.Update(new GameTime());
+            Position = camera.cameraPosition;
+            Forward = camera.target;
+            gameObject.world = camera.view;
+        }
+
         public void Update(GameTime gameTime)
         {
             if (localPlayer)
@@ -45,12 +53,12 @@ namespace FinalProject
                 var oldTar = camera.target;
                 camera.Update(gameTime);
 
-                /*if (GameObjectManager.Instance.CheckCollision(gameObject))
+                if (GameObjectManager.Instance.CheckCollision(gameObject))
                 {
                     camera.target = oldTar;
                     camera.view = oldPos;
                     camera.cameraPosition = oldPos.Translation;
-                }*/
+                }
 
                 Position = camera.cameraPosition;
                 Forward = camera.target;
@@ -60,6 +68,7 @@ namespace FinalProject
             {
                 var matrix = Matrix.CreateWorld(Position, -(Forward - Position), Vector3.Up);
                 gameObject.world = matrix;
+                gameObject.Update(gameTime);
             }
         }
 
