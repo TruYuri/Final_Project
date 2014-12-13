@@ -19,5 +19,6 @@ namespace FinalProject
         public Matrix world;
         public virtual void Update(GameTime gameTime) {}
         public virtual void Draw(Camera camera) {}
+
     }
 }

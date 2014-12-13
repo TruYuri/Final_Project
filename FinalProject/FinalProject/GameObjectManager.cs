@@ -33,9 +33,10 @@ namespace FinalProject
             }
         }
 
-        public GameObjectManager(Game game, Camera camera) : base(game)
+        public GameObjectManager(Game game, Camera c) : base(game)
         {
             gameObjects = new List<GameObject>();
+            camera = c;
         }
 
         public override void Update(GameTime gameTime)
