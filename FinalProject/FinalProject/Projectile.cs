@@ -19,7 +19,7 @@ namespace FinalProject
         float speed;
         float timeToLive;
 
-        public Projectile(BasicModel m, Vector3 d, float s, string name) : base(m, true, name)
+        public Projectile(BasicModel m, Vector3 d, float s, string name, string owner) : base(m, true, name, owner)
         {
             model = m;
             dir = d;

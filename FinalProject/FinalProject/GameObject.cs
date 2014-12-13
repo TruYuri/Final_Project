@@ -16,13 +16,15 @@ namespace FinalProject
     class GameObject
     {
         public string type;
+        public string owner;
         public BasicModel model;
         public Matrix world;
         public BoundingSphere sphere;
         bool drawModel;
 
-        public GameObject(BasicModel m, bool draw, string t) 
+        public GameObject(BasicModel m, bool draw, string t, string o) 
         {
+            owner = o;
             type = t;
             drawModel = draw;
             model = m;

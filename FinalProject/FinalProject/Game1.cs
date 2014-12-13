@@ -12,7 +12,7 @@ using Microsoft.Xna.Framework.Net;
 
 namespace FinalProject
 {
-    public enum MessageType { UpdatePosition, WeaponFired, EndGame, StartGame, RejoinLobby, RestartGame, UpdateRemotePlayer, Died }
+    public enum MessageType { UpdatePosition, WeaponFired, EndGame, StartGame, RejoinLobby, RestartGame, UpdateRemotePlayer, Kill }
     public enum GameState
     {
         SignIn, FindSession,
@@ -146,8 +146,8 @@ namespace FinalProject
                         case MessageType.WeaponFired:
                             WeaponFired();
                             break;
-                        case MessageType.Died:
-                            Died();
+                        case MessageType.Kill:
+                            Kill();
                             break;
                         //Any other actions for specific messages
 
@@ -156,13 +156,37 @@ namespace FinalProject
             }
         }
 
-        protected void Died()
+        protected void Kill()
         {
             // Get the other (non-local) player
-            string tag = packetReader.ReadString();
+            VehicleState killType = (VehicleState)packetReader.ReadInt32();
+            string name;
+            string name2;
+
+            switch (killType)
+            {
+                case VehicleState.CrashedGround:
+                    name = packetReader.ReadString();
+                    FindAndKill(name);
+                    break;
+                case VehicleState.CrashedVehicle:
+                    name = packetReader.ReadString();
+                    name2 = packetReader.ReadString();
+                    FindAndKill(name);
+                    FindAndKill(name2);
+                    break;
+                case VehicleState.Died:
+                    name = packetReader.ReadString();
+                    FindAndKill(name);
+                    break;
+            }
+        }
+
+        private void FindAndKill(string name)
+        {
             foreach (var player in players)
             {
-                if (player.name == tag)
+                if (player.name == name)
                 {
                     player.Delete();
                     player.alive = false;
@@ -276,6 +300,11 @@ namespace FinalProject
             //Boolean used to inform the Update function that the local player is calling update,          //therefore update based on local input
             localPlayer.Update(gameTime);
 
+            if(localPlayer.status == VehicleState.CrashedVehicle)
+            {
+                FindAndKill(localPlayer.collider);
+            }
+
             // Send data to other player
             foreach (NetworkGamer gamer in networkSession.AllGamers)
             {
@@ -293,9 +322,23 @@ namespace FinalProject
                     }
                     else
                     {
-                        packetWriter.Write((int)MessageType.Died);
-                        packetWriter.Write(localPlayer.name);
-                        localGamer.SendData(packetWriter, SendDataOptions.ReliableInOrder, gamer);
+                        packetWriter.Write((int)MessageType.Kill);
+                        switch(localPlayer.status)
+                        {
+                            case VehicleState.CrashedGround:
+                                packetWriter.Write(localPlayer.name);
+                                localGamer.SendData(packetWriter, SendDataOptions.ReliableInOrder, gamer);
+                                break;
+                            case VehicleState.CrashedVehicle:
+                                packetWriter.Write(localPlayer.collider);
+                                packetWriter.Write(localPlayer.name);
+                                localGamer.SendData(packetWriter, SendDataOptions.ReliableInOrder, gamer);
+                                break;
+                            case VehicleState.Died:
+                                packetWriter.Write(localPlayer.name);
+                                localGamer.SendData(packetWriter, SendDataOptions.ReliableInOrder, gamer);
+                                break;
+                        }
                     }
                 }
             }
@@ -353,7 +396,7 @@ namespace FinalProject
                 //Perform any necessary clean up,
                 //stop sound track, etc.
 
-                if (e.Gamer.Tag == pl.name)
+                if (e.Gamer.Gamertag == pl.name)
                 {
                     player = pl;
                     pl.Delete();

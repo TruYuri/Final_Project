@@ -13,8 +13,11 @@ using Microsoft.Xna.Framework.Net;
 
 namespace FinalProject
 {
+    public enum VehicleState { Alive, WeaponFired, CrashedGround, CrashedVehicle, TookDamage, Died }
     class Player
     {
+        public VehicleState status;
+        public string collider;
         public int health;
         public int shield;
         public bool alive;
@@ -34,10 +37,11 @@ namespace FinalProject
             map = t;
             localPlayer = local;
             alive = true;
+            status = VehicleState.Alive;
             if(local)
-                gameObject = new GameObject(m, false, "vehicle");
+                gameObject = new GameObject(m, false, "vehicle", name);
             else
-                gameObject = new GameObject(m, true, "vehicle");
+                gameObject = new GameObject(m, true, "vehicle", name);
         }
 
         public void Initialize()
@@ -52,21 +56,26 @@ namespace FinalProject
         {
             if (localPlayer)
             {
-                //camera.update_clone();
                 camera.Update(gameTime);
 
-                var colliders = GameObjectManager.Instance.CheckCollision(gameObject);
-                foreach (var collider in colliders)
+                if (gameObject != null)
                 {
-                    switch(collider.type)
+                    var colliders = GameObjectManager.Instance.CheckCollision(gameObject);
+                    this.collider = null;
+                    foreach (var collider in colliders)
                     {
-                        case "vehicle":
-                            alive = false;
-                            Delete();
-                            break;
-                        case "projectile":
-                            //health = min()
-                            break;
+                        switch (collider.type)
+                        {
+                            case "vehicle":
+                                status = VehicleState.CrashedVehicle;
+                                this.collider = collider.owner;
+                                alive = false;
+                                Delete();
+                                break;
+                            case "projectile":
+                                //health = min()
+                                break;
+                        }
                     }
                 }
 
