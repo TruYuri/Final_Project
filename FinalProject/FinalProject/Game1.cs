@@ -323,6 +323,7 @@ namespace FinalProject
                     else
                     {
                         packetWriter.Write((int)MessageType.Kill);
+                        packetWriter.Write((int)localPlayer.status);
                         switch(localPlayer.status)
                         {
                             case VehicleState.CrashedGround:
