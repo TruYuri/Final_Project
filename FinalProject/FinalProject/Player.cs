@@ -45,7 +45,9 @@ namespace FinalProject
             }
             else
             {
-                model.World = Matrix.CreateFromYawPitchRoll(YPR.X, YPR.Y, YPR.Z) + Matrix.CreateTranslation(Position);
+                var matrix = Matrix.CreateFromYawPitchRoll(YPR.X, YPR.Y, YPR.Z);
+                matrix.Translation = Position;
+                model.World = matrix;
             }
             // send network stuff
         }
