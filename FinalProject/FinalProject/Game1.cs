@@ -222,17 +222,17 @@ namespace FinalProject
             LocalNetworkGamer localGamer = networkSession.LocalGamers[0];
 
             // Get the local player's sprite
-            Player local = (Player)localGamer.Tag;
+            //Player local = (Player)localGamer.Tag;
 
             // Call the local's Update method, which will process user input
             // for movement and update the animation frame
             //Boolean used to inform the Update function that the local player is calling update,          //therefore update based on local input
-            local.Update(gameTime);
+            localPlayer.Update(gameTime);
 
             // Send message to other player with message tag and new position of local player
             packetWriter.Write((int)MessageType.UpdateRemotePlayer);
-            packetWriter.Write(local.Position);
-            packetWriter.Write(local.YPR);
+            packetWriter.Write(localPlayer.Position);
+            packetWriter.Write(localPlayer.YPR);
 
             // Send data to other player
             foreach (NetworkGamer gamer in networkSession.AllGamers)
@@ -455,6 +455,7 @@ namespace FinalProject
 
         void DrawInGameScreen(GameTime gameTime)
         {
+            localPlayer.Draw();
             foreach(var p in players)
             {
                 p.Draw();
