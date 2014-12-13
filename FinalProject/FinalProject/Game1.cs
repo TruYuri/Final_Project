@@ -229,16 +229,18 @@ namespace FinalProject
             //Boolean used to inform the Update function that the local player is calling update,          //therefore update based on local input
             localPlayer.Update(gameTime);
 
-            // Send message to other player with message tag and new position of local player
-            packetWriter.Write((int)MessageType.UpdateRemotePlayer);
-            packetWriter.Write(localPlayer.Position);
-            packetWriter.Write(localPlayer.YPR);
-
             // Send data to other player
             foreach (NetworkGamer gamer in networkSession.AllGamers)
             {
                 if(!gamer.IsLocal)
-                    localGamer.SendData(packetWriter, SendDataOptions.InOrder, gamer);
+                {
+                    // Send message to other player with message tag and new position of local player
+                    packetWriter.Write((int)MessageType.UpdateRemotePlayer);
+                    packetWriter.Write(localPlayer.Position);
+                    packetWriter.Write(localPlayer.YPR);
+
+                    localGamer.SendData(packetWriter, SendDataOptions.ReliableInOrder, gamer);
+                }
             }
 
             //Package up any other necessary data and send it to other player
