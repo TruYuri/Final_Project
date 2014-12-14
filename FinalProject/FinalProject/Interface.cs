@@ -23,7 +23,7 @@ namespace FinalProject
         {
         }
 
-        public void Draw(SpriteBatch spriteBatch, GameState currentGameState, Player player)
+        public void Draw(SpriteBatch spriteBatch, SpriteFont font, GameState currentGameState, Player player)
         {
             switch (currentGameState)
             {
@@ -33,14 +33,14 @@ namespace FinalProject
                 case GameState.Start:
                     break;
                 case GameState.InGame:
-                    DrawGameplayScreen(spriteBatch, player);
+                    DrawGameplayScreen(spriteBatch, font, player);
                     break;
                 case GameState.GameOver:
                     break;
             }
         }
 
-        private void DrawGameplayScreen(SpriteBatch spriteBatch, Player player)
+        private void DrawGameplayScreen(SpriteBatch spriteBatch, SpriteFont font, Player player)
         {
             if (player == null)
                 return;
@@ -56,8 +56,15 @@ namespace FinalProject
                     var coords = Game1.GraphicsDeviceRef.Viewport.Project(player2.Position, camera.projection, camera.view,
                         Matrix.Identity);
 
-                    if(coords.Z < 1.0f)
-                        spriteBatch.Draw(t, new Vector2(coords.X - t.Width / 2, coords.Y - t.Height / 2), Color.White);
+                    if (coords.Z < 1.0f)
+                    {
+                        float s = 0.5f;
+                        spriteBatch.Draw(t, new Vector2(coords.X - t.Width * s / 2, coords.Y - t.Height * s / 2), null, Color.White, 0.0f, Vector2.Zero, coords.Z * s, SpriteEffects.None, 0);
+                        spriteBatch.DrawString(font, player2.name,
+                                               new Vector2((coords.X + t.Width * s / 2) * coords.Z, (coords.Y - t.Height * s / 2)), Color.White);
+                        spriteBatch.DrawString(font, ((player2.Position - player.Position).Length().ToString("0")) + "m",
+                                               new Vector2((coords.X + t.Width * s / 2) * coords.Z, (coords.Y + t.Height * s / 2)), Color.White);
+                    }
                 }
 
                 var r = textures["reticle"];

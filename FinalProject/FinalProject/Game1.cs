@@ -26,6 +26,7 @@ namespace FinalProject
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        SpriteFont font;
 
         Camera camera;
         Player localPlayer;
@@ -69,6 +70,7 @@ namespace FinalProject
             iface = new Interface();
             ContentManager = Content;
             GraphicsDeviceRef = GraphicsDevice;
+            font = Content.Load<SpriteFont>("font");
             renderTarget = new RenderTarget2D(GraphicsDevice, xRes, yRes, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
         }
 
@@ -673,7 +675,7 @@ namespace FinalProject
 
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
             spriteBatch.Draw(renderTarget, new Rectangle(0, 0, xRes, yRes), Color.White);
-            iface.Draw(spriteBatch, currentGameState, localPlayer);
+            iface.Draw(spriteBatch, font, currentGameState, localPlayer);
             spriteBatch.End();
 
             base.Draw(gameTime);
