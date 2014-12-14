@@ -21,7 +21,6 @@ namespace FinalProject
         public Vector3 cameraDirection;
         public Vector3 cameraUp;
         public Vector3 target;
-        public float scalarVelocity;
         public Vector3 velocity;
 
         MouseState prevMouseState;

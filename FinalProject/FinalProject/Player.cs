@@ -60,6 +60,9 @@ namespace FinalProject
 
         public void Update(GameTime gameTime)
         {
+            var mState = Mouse.GetState();
+            var kState = Keyboard.GetState();
+
             timeToNextFire += (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (localPlayer)
             {
@@ -125,7 +128,7 @@ namespace FinalProject
                     {
                         var def = Projectile.definitions[weaponType];
 
-                        if (Mouse.GetState().LeftButton == ButtonState.Pressed && def.fireTime - timeToNextFire <= 0.0f)
+                        if ((mState.LeftButton == ButtonState.Pressed || kState.IsKeyDown(Keys.Space)) && def.fireTime - timeToNextFire <= 0.0f)
                         {
                             timeToNextFire = 0.0f;
                             var transpose = Matrix.Transpose(camera.view);

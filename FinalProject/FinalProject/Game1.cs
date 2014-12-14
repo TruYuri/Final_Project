@@ -247,10 +247,14 @@ namespace FinalProject
                 camera = new Camera(this, map);
 
             var gom = GameObjectManager.Instance;
+            var am = AudioManager.Instance;
             Components.Clear();
             if(gom == null)
                 gom = new GameObjectManager(this, camera);
+            if (am == null)
+                am = new AudioManager(this);
             Components.Add(gom);
+            Components.Add(am);
 
             #region Map
             Terrain x0y0 = new Terrain("image", "Map_c", 0, 0);
