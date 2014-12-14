@@ -85,6 +85,7 @@ namespace FinalProject
                         status = VehicleState.Respawn;
                         camera.PlaceCamera(new Vector3(0, 600, 0), new Vector3(0, 0, 1), Vector3.Up);
                         Initialize();
+                        return;
                     }
                 }
 
@@ -214,10 +215,6 @@ namespace FinalProject
                             var projectile = new Projectile(Position, matrix.Forward, Velocity, weaponType, name);
                             break;
                     }
-                }
-                else
-                {
-                    Delete();
                 }
 
                 if (alive)

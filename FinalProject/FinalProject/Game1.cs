@@ -99,8 +99,8 @@ namespace FinalProject
         {
             // Set game state to InGame
             currentGameState = GameState.InGame;
-            GameObjectManager.Instance.Reset();
-            map.Load();
+            //GameObjectManager.Instance.Reset();
+            //map.Load();
             // Any other things that need to be set up
             //for beginning a game
             //Starting audio, resetting values, etc.
@@ -599,8 +599,8 @@ namespace FinalProject
                    // ButtonState.Pressed)
                 {
                     // Send message to other player that we're starting
-                    packetWriter.Write((int)MessageType.StartGame);
-                    localGamer.SendData(packetWriter, SendDataOptions.Reliable);
+                    //packetWriter.Write((int)MessageType.StartGame);
+                    //localGamer.SendData(packetWriter, SendDataOptions.Reliable);
                     
                     // Call StartGame
                     StartGame();
