@@ -205,14 +205,12 @@ namespace FinalProject
         {
             var name = packetReader.ReadString();
             var weapon = packetReader.ReadString();
-            var speed = packetReader.ReadSingle();
             foreach (var player in players)
             {
                 if (player.name == name)
                 {
                     player.weaponType = weapon;
                     player.status = VehicleState.WeaponFired;
-                    player.scalarVelocity = speed;
                     break;
                 }
             }
@@ -373,6 +371,7 @@ namespace FinalProject
                         packetWriter.Write(localPlayer.name);
                         packetWriter.Write(localPlayer.Position);
                         packetWriter.Write(localPlayer.Forward);
+                        packetWriter.Write(localPlayer.Velocity);
 
                         localGamer.SendData(packetWriter, SendDataOptions.InOrder, gamer);
 
@@ -384,7 +383,6 @@ namespace FinalProject
                                 packetWriter.Write((int)MessageType.WeaponFired);
                                 packetWriter.Write(localPlayer.name);
                                 packetWriter.Write(localPlayer.weaponType);
-                                packetWriter.Write(localPlayer.scalarVelocity);
                                 break;
                         }
                     }
@@ -425,6 +423,7 @@ namespace FinalProject
                 {
                     gamer.Position = packetReader.ReadVector3();
                     gamer.Forward = packetReader.ReadVector3();
+                    gamer.Velocity = packetReader.ReadVector3();
                 }
             }
         }

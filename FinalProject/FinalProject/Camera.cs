@@ -22,7 +22,7 @@ namespace FinalProject
         public Vector3 cameraUp;
         public Vector3 target;
         public float scalarVelocity;
-        Vector3 velocity;
+        public Vector3 velocity;
 
         MouseState prevMouseState;
         Map map;
@@ -63,8 +63,7 @@ namespace FinalProject
             else if (kState.IsKeyDown(Keys.S))
                 throttle = Math.Max(throttle - throttleRate * time, 0.05f);
 
-            scalarVelocity = 1000 * time * throttle * s;
-            velocity = cameraDirection * scalarVelocity;
+            velocity = cameraDirection * 1000 * throttle * s * time;
 
             cameraPosition += velocity;
             target += velocity;
@@ -117,7 +116,7 @@ namespace FinalProject
             if (height != null)
             {
                 cameraPosition.Y = cameraPosition.Y - (float)height + 300;
-                target.Y = target.Y - (float)height + 50;
+                target.Y = target.Y - (float)height + 300;
             }
 
             CreateLookAt();

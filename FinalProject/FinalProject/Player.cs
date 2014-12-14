@@ -25,7 +25,7 @@ namespace FinalProject
         public string name;
         public Vector3 Position;
         public Vector3 Forward;
-        public float scalarVelocity;
+        public Vector3 Velocity;
 
         Camera camera; // all movement
         Map map;
@@ -99,7 +99,7 @@ namespace FinalProject
 
                     Position = camera.cameraPosition;
                     Forward = camera.target;
-                    scalarVelocity = camera.scalarVelocity;
+                    Velocity = camera.velocity;
 
                     float? height = null;
                     foreach (var t in map.terrainPieces)
@@ -129,7 +129,7 @@ namespace FinalProject
                         {
                             timeToNextFire = 0.0f;
                             var transpose = Matrix.Transpose(camera.view);
-                            var projectile = new Projectile(Position, -transpose.Forward, -scalarVelocity, weaponType, name);
+                            var projectile = new Projectile(Position, -transpose.Forward, Velocity, weaponType, name);
                             status = VehicleState.WeaponFired;
                         }
                     }
@@ -179,7 +179,7 @@ namespace FinalProject
                     {
                         case VehicleState.WeaponFired:
                             var def = Projectile.definitions[weaponType];
-                            var projectile = new Projectile(Position, matrix.Forward, scalarVelocity, weaponType, name);
+                            var projectile = new Projectile(Position, matrix.Forward, Velocity, weaponType, name);
                             break;
                     }
                 }
