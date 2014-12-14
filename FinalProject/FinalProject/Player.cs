@@ -57,8 +57,10 @@ namespace FinalProject
                 camera.Update(new GameTime());
                 Position = camera.cameraPosition;
                 Forward = camera.target;
+                gameObject = new GameObject(new BasicModel(Game1.ContentManager.Load<Model>("spaceship"), new Vector3(0, 600, 0)), false, "vehicle", name);
             }
-            gameObject = new GameObject(new BasicModel(Game1.ContentManager.Load<Model>("spaceship"), new Vector3(0, 600, 0)), false, "vehicle", name);
+            else
+                gameObject = new GameObject(new BasicModel(Game1.ContentManager.Load<Model>("spaceship"), new Vector3(0, 600, 0)), true, "vehicle", name);
             gameObject.world = Matrix.CreateWorld(Position, -(Forward - Position), Vector3.Up);
             alive = true;
             status = VehicleState.Alive;

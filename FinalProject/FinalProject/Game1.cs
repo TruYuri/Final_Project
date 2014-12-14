@@ -403,14 +403,14 @@ namespace FinalProject
                                 packetWriter.Write((int)MessageType.WeaponFired);
                                 packetWriter.Write(localPlayer.name);
                                 packetWriter.Write(localPlayer.weaponType);
+                                localGamer.SendData(packetWriter, SendDataOptions.InOrder, gamer);
                                 break;
                             case VehicleState.Respawn:
                                 packetWriter.Write((int)MessageType.Respawn);
                                 packetWriter.Write(localPlayer.name);
+                                localGamer.SendData(packetWriter, SendDataOptions.InOrder, gamer);
                                 break;
                         }
-
-                        localGamer.SendData(packetWriter, SendDataOptions.InOrder, gamer);
                     }
                     else
                     {
@@ -499,7 +499,7 @@ namespace FinalProject
             players.Remove(player);
         
 		    //Go back to looking for another session
-		    currentGameState = GameState.FindSession;
+		    // currentGameState = GameState.FindSession;
         }
 
         private void Update_GameOver(GameTime gameTime)
