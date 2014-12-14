@@ -27,8 +27,8 @@ namespace FinalProject
         public Vector3 Forward;
         public Vector3 Velocity;
         public int lives;
+        public float respawnTimer;
 
-        float respawnTimer;
         Camera camera; // all movement
         Map map;
         GameObject gameObject;
@@ -88,7 +88,6 @@ namespace FinalProject
                     status = PlayerState.Alive;
                 else
                 {
-                    status = PlayerState.Died;
                     respawnTimer -= time;
                     if(respawnTimer <= 0.0f)
                     {
@@ -202,7 +201,6 @@ namespace FinalProject
                 }
                 else
                 {
-                    status = PlayerState.Died;
                     Delete();
                 }
             }

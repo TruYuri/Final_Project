@@ -25,17 +25,31 @@ namespace FinalProject
 
         public void Draw(SpriteBatch spriteBatch, SpriteFont font, GameState currentGameState, Player player)
         {
+            Vector2 pos;
             switch (currentGameState)
             {
                 case GameState.SignIn:
+                    pos = new Vector2(Game1.xRes / 2, Game1.yRes / 2) - font.MeasureString("Signing in...") / 2;
+                    spriteBatch.DrawString(font, "Signing in...", pos, Color.White);
+                    break;
                 case GameState.FindSession:
+                    pos = new Vector2(Game1.xRes / 2, Game1.yRes / 2) - font.MeasureString("Searching for game...") / 2;
+                    spriteBatch.DrawString(font, "Searching for game...", pos, Color.White);
+                    break;
                 case GameState.CreateSession:
+                    pos = new Vector2(Game1.xRes / 2, Game1.yRes / 2) - font.MeasureString("Creating game...") / 2;
+                    spriteBatch.DrawString(font, "Creating game...", pos, Color.White);
+                    break;
                 case GameState.Start:
+                    pos = new Vector2(Game1.xRes / 2, Game1.yRes / 2) - font.MeasureString("Starting game...") / 2;
+                    spriteBatch.DrawString(font, "Starting game...", pos, Color.White);
                     break;
                 case GameState.InGame:
                     DrawGameplayScreen(spriteBatch, font, player);
                     break;
                 case GameState.GameOver:
+                    pos = new Vector2(Game1.xRes / 2, Game1.yRes / 2) - font.MeasureString("Game over!") / 2;
+                    spriteBatch.DrawString(font, "Game over!", pos, Color.White);
                     break;
             }
         }
@@ -70,6 +84,29 @@ namespace FinalProject
                 var r = textures["reticle"];
                 spriteBatch.Draw(r, new Vector2(Game1.xRes / 2 - r.Width / 2, Game1.yRes / 2 - r.Height / 2), Color.White);
             }
+            else if(player.status == PlayerState.CrashedGround)
+            {
+                Vector2 pos;
+
+                pos = new Vector2(Game1.xRes / 2, Game1.yRes / 2) - font.MeasureString("Crashed!") / 2;
+                spriteBatch.DrawString(font, "Crashed!", new Vector2(pos.X, Game1.yRes / 3), Color.White);
+                Respawn(spriteBatch, font, player);
+            }
+            else if (player.status == PlayerState.CrashedVehicle)
+            {
+                Vector2 pos;
+
+                pos = new Vector2(Game1.xRes / 2, Game1.yRes / 2) - font.MeasureString("Crashed into " + player.collider) / 2;
+                spriteBatch.DrawString(font, "Crashed into " + player.collider, new Vector2(pos.X, Game1.yRes / 3), Color.White);
+                Respawn(spriteBatch, font, player);
+            }
+        }
+
+        private void Respawn(SpriteBatch spriteBatch, SpriteFont font, Player player)
+        {
+            string respawn = "Respawn in " + player.respawnTimer.ToString("0") + "...";
+            var pos = new Vector2(Game1.xRes / 2, Game1.yRes / 2) - font.MeasureString(respawn) / 2;
+            spriteBatch.DrawString(font, respawn, new Vector2(pos.X, Game1.yRes / 3 + Game1.yRes / 3), Color.White);
         }
 
         public static void LoadGameplayInterface(List<Player> players, Camera camera)
