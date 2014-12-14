@@ -54,9 +54,10 @@ namespace FinalProject
                 foreach (var player2 in players)
                 {
                     var coords = Game1.GraphicsDeviceRef.Viewport.Project(player2.Position, camera.projection, camera.view,
-                        Matrix.CreateWorld(player2.Position, -(player2.Forward - player2.Position), Vector3.Up));
+                        Matrix.Identity);
 
-                    spriteBatch.Draw(t, new Vector2(coords.X, coords.Y), Color.White);
+                    if(coords.Z < 1.0f)
+                        spriteBatch.Draw(t, new Vector2(coords.X - t.Width / 2, coords.Y - t.Height / 2), Color.White);
                 }
 
                 var r = textures["reticle"];

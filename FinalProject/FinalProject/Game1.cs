@@ -641,6 +641,7 @@ namespace FinalProject
             {
                 GraphicsDevice.SetRenderTarget(renderTarget);
                 GraphicsDevice.Clear(Color.CornflowerBlue);
+                GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
                 // Based on the current game state,
                 // call the appropriate method
