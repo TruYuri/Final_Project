@@ -13,7 +13,7 @@ using Microsoft.Xna.Framework.Net;
 
 namespace FinalProject
 {
-    public enum VehicleState { Alive, WeaponFired, CrashedGround, CrashedVehicle, TookDamage, Died }
+    public enum VehicleState { Alive, WeaponFired, CrashedGround, CrashedVehicle, TookDamage, Died, Respawn }
     class Player
     {
         public VehicleState status;
@@ -26,14 +26,17 @@ namespace FinalProject
         public Vector3 Position;
         public Vector3 Forward;
         public Vector3 Velocity;
+        public int lives;
 
+        float respawnTimer;
         Camera camera; // all movement
         Map map;
         GameObject gameObject;
         bool localPlayer;
         float timeToNextFire;
+        BasicModel model;
 
-        public Player(Game game, Camera c, Map t, bool local, BasicModel m, string n)
+        public Player(Game game, Camera c, Map t, bool local, string n)
         {
             health = 1000.0f;
             name = n;
@@ -44,32 +47,44 @@ namespace FinalProject
             status = VehicleState.Alive;
             weaponType = "projectile";
             timeToNextFire = Projectile.definitions[weaponType].fireTime;
-            if(local)
-                gameObject = new GameObject(m, false, "vehicle", name);
-            else
-                gameObject = new GameObject(m, true, "vehicle", name);
+            lives = 5;
         }
 
         public void Initialize()
         {
-            camera.Update(new GameTime());
-            Position = camera.cameraPosition;
-            Forward = camera.target;
+            if (localPlayer)
+            {
+                camera.Update(new GameTime());
+                Position = camera.cameraPosition;
+                Forward = camera.target;
+            }
+            gameObject = new GameObject(new BasicModel(Game1.ContentManager.Load<Model>("spaceship"), new Vector3(0, 600, 0)), false, "vehicle", name);
             gameObject.world = Matrix.CreateWorld(Position, -(Forward - Position), Vector3.Up);
+            alive = true;
+            status = VehicleState.Alive;
         }
 
         public void Update(GameTime gameTime)
         {
             var mState = Mouse.GetState();
             var kState = Keyboard.GetState();
-
-            timeToNextFire += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            float time = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            timeToNextFire += time;
             if (localPlayer)
             {
                 if (alive)
                     status = VehicleState.Alive;
                 else
+                {
                     status = VehicleState.Died;
+                    respawnTimer -= time;
+                    if(respawnTimer <= 0.0f)
+                    {
+                        status = VehicleState.Respawn;
+                        camera.PlaceCamera(new Vector3(0, 600, 0), new Vector3(0, 0, 1), Vector3.Up);
+                        Initialize();
+                    }
+                }
 
                 if (alive)
                 {
@@ -142,6 +157,11 @@ namespace FinalProject
                             var projectile = new Projectile(Position, -transpose.Forward, Velocity, weaponType, name);
                             status = VehicleState.WeaponFired;
                         }
+                    }
+
+                    if(!alive)
+                    {
+                        respawnTimer = 5.0f;
                     }
 
                     if (gameObject != null)

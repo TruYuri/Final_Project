@@ -12,7 +12,7 @@ using Microsoft.Xna.Framework.Net;
 
 namespace FinalProject
 {
-    public enum MessageType { UpdatePosition, WeaponFired, EndGame, StartGame, RejoinLobby, RestartGame, UpdateRemotePlayer, Kill }
+    public enum MessageType { UpdatePosition, WeaponFired, EndGame, StartGame, RejoinLobby, RestartGame, UpdateRemotePlayer, Kill, Respawn }
     public enum GameState
     {
         SignIn, FindSession,
@@ -154,9 +154,24 @@ namespace FinalProject
                         case MessageType.Kill:
                             Kill();
                             break;
+                        case MessageType.Respawn:
+                            Respawn();
+                            break;
                         //Any other actions for specific messages
 
                     }
+                }
+            }
+        }
+
+        protected void Respawn()
+        {
+            string name = packetReader.ReadString();
+            foreach (var player in players)
+            {
+                if (player.name == name)
+                {
+                    player.Initialize();
                 }
             }
         }
@@ -329,8 +344,7 @@ namespace FinalProject
         {
             InitializeLevel();
 
-            localPlayer = new Player(this, camera, map, true,
-                                     new BasicModel(Content.Load<Model>("spaceship"), new Vector3(0, 600, 0)), name);
+            localPlayer = new Player(this, camera, map, true, name);
             localPlayer.Initialize();
 
             return localPlayer;
@@ -340,7 +354,9 @@ namespace FinalProject
         {
             InitializeLevel();
 
-            Player remote = new Player(this, camera, map, false, new BasicModel(Content.Load<Model>("spaceship"), new Vector3(0, 600, 0)), name);
+            Player remote = new Player(this, camera, map, false, name);
+            remote.Initialize();
+
             players.Add(remote);
             return remote;
         }
@@ -388,7 +404,13 @@ namespace FinalProject
                                 packetWriter.Write(localPlayer.name);
                                 packetWriter.Write(localPlayer.weaponType);
                                 break;
+                            case VehicleState.Respawn:
+                                packetWriter.Write((int)MessageType.Respawn);
+                                packetWriter.Write(localPlayer.name);
+                                break;
                         }
+
+                        localGamer.SendData(packetWriter, SendDataOptions.InOrder, gamer);
                     }
                     else
                     {
@@ -398,18 +420,17 @@ namespace FinalProject
                         {
                             case VehicleState.CrashedGround:
                                 packetWriter.Write(localPlayer.name);
-                                localGamer.SendData(packetWriter, SendDataOptions.ReliableInOrder, gamer);
                                 break;
                             case VehicleState.CrashedVehicle:
                                 packetWriter.Write(localPlayer.collider);
                                 packetWriter.Write(localPlayer.name);
-                                localGamer.SendData(packetWriter, SendDataOptions.ReliableInOrder, gamer);
                                 break;
                             case VehicleState.Died:
                                 packetWriter.Write(localPlayer.name);
-                                localGamer.SendData(packetWriter, SendDataOptions.ReliableInOrder, gamer);
                                 break;
                         }
+
+                        localGamer.SendData(packetWriter, SendDataOptions.InOrder, gamer);
                     }
                 }
             }

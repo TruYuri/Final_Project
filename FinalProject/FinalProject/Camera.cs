@@ -102,6 +102,7 @@ namespace FinalProject
             cameraDirection.Normalize();
             target = cameraPosition + cameraDirection * new Vector3(1, 1, 1);
             cameraUp = up;
+            throttle = 0.05f;
 
             float? height = null;
 
