@@ -63,8 +63,12 @@ namespace FinalProject
             if (localPlayer)
             {
                 if (alive)
-                {
                     status = VehicleState.Alive;
+                else
+                    status = VehicleState.Died;
+
+                if (alive)
+                {
                     camera.Update(gameTime);
 
                     if (gameObject != null)
@@ -121,11 +125,6 @@ namespace FinalProject
             else
             {
                 if (alive)
-                    status = VehicleState.Alive;
-                else
-                    status = VehicleState.Died;
-
-                if (alive)
                 {
                     var matrix = Matrix.CreateWorld(Position, -(Forward - Position), Vector3.Up);
                     if (gameObject != null)
@@ -168,6 +167,11 @@ namespace FinalProject
                 {
                     Delete();
                 }
+
+                if (alive)
+                    status = VehicleState.Alive;
+                else
+                    status = VehicleState.Died;
             }
         }
 
