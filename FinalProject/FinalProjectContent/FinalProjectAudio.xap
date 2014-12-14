@@ -215,3 +215,25 @@ Global Settings
         Max = 1000000.000000;
     }
 }
+
+Wave Bank
+{
+    Name = Wave Bank;
+    Xbox File = Xbox\Wave Bank.xwb;
+    Windows File = Win\Wave Bank.xwb;
+    Xbox Bank Path Edited = 0;
+    Windows Bank Path Edited = 0;
+    Seek Tables = 1;
+    Compression Preset Name = <none>;
+    Bank Last Revised Low = 4186226101;
+    Bank Last Revised High = 30414701;
+}
+
+Sound Bank
+{
+    Name = Sound Bank;
+    Xbox File = Xbox\Sound Bank.xsb;
+    Windows File = Win\Sound Bank.xsb;
+    Xbox Bank Path Edited = 0;
+    Windows Bank Path Edited = 0;
+}
