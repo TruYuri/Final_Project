@@ -21,6 +21,7 @@ namespace FinalProject
 
     public class Game1 : Microsoft.Xna.Framework.Game
     {
+        public static ContentManager ContentManager;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Camera camera;
@@ -43,6 +44,8 @@ namespace FinalProject
             packetReader = new PacketReader();
 
             players = new List<Player>();
+
+            ContentManager = Content;
         }
 
         protected override void Initialize()
@@ -198,7 +201,18 @@ namespace FinalProject
 
         protected void WeaponFired()
         {
-            
+            var name = packetReader.ReadString();
+            var weapon = packetReader.ReadString();
+
+            foreach (var player in players)
+            {
+                if (player.name == name)
+                {
+                    player.weaponType = weapon;
+                    player.status = VehicleState.WeaponFired;
+                    break;
+                }
+            }
         }
 
         protected void WireUpEvents()
@@ -319,6 +333,17 @@ namespace FinalProject
                         packetWriter.Write(localPlayer.Forward);
 
                         localGamer.SendData(packetWriter, SendDataOptions.InOrder, gamer);
+
+                        switch(localPlayer.status)
+                        {
+                            case VehicleState.TookDamage:
+                                break;
+                            case VehicleState.WeaponFired:
+                                packetWriter.Write((int)MessageType.WeaponFired);
+                                packetWriter.Write(localPlayer.name);
+                                packetWriter.Write(localPlayer.weaponType);
+                                break;
+                        }
                     }
                     else
                     {
