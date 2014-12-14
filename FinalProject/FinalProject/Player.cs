@@ -56,12 +56,12 @@ namespace FinalProject
             {
                 camera.Update(new GameTime());
                 Position = camera.cameraPosition;
-                Forward = camera.target;
+                Forward = -Matrix.Transpose(camera.view).Forward;
                 gameObject = new GameObject(new BasicModel(Game1.ContentManager.Load<Model>("spaceship"), new Vector3(0, 600, 0)), false, "vehicle", name);
             }
             else
                 gameObject = new GameObject(new BasicModel(Game1.ContentManager.Load<Model>("spaceship"), new Vector3(0, 600, 0)), true, "vehicle", name);
-            gameObject.world = Matrix.CreateWorld(Position, -(Forward - Position), Vector3.Up);
+            gameObject.world = Matrix.CreateWorld(Position, Forward, Vector3.Up);
             alive = true;
         }
 
@@ -127,7 +127,7 @@ namespace FinalProject
                     }
 
                     Position = camera.cameraPosition;
-                    Forward = camera.target;
+                    Forward = -Matrix.Transpose(camera.view).Forward; // camera.target;
                     Velocity = camera.velocity;
 
                     float? height = null;
@@ -159,7 +159,7 @@ namespace FinalProject
                         {
                             timeToNextFire = 0.0f;
                             var transpose = Matrix.Transpose(camera.view);
-                            var projectile = new Projectile(Position, -transpose.Forward, Velocity, weaponType, name);
+                            var projectile = new Projectile(Position, Forward, Velocity, weaponType, name);
                             status = PlayerState.WeaponFired;
                         }
                     }
@@ -170,7 +170,7 @@ namespace FinalProject
                     }
 
                     if (gameObject != null)
-                        gameObject.world = Matrix.CreateWorld(Position, -(Forward - Position), Vector3.Up);
+                        gameObject.world = Matrix.CreateWorld(Position, Forward, Vector3.Up);
                 }
                 else
                 {
@@ -182,7 +182,7 @@ namespace FinalProject
             {
                 if (alive)
                 {
-                    var matrix = Matrix.CreateWorld(Position, -(Forward - Position), Vector3.Up);
+                    var matrix = Matrix.CreateWorld(Position, Forward, Vector3.Up);
                     if (gameObject != null)
                     {
                         gameObject.world = matrix;
