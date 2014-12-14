@@ -25,6 +25,7 @@ namespace FinalProject
         public string name;
         public Vector3 Position;
         public Vector3 Forward;
+        public float scalarVelocity;
 
         Camera camera; // all movement
         Map map;
@@ -98,6 +99,27 @@ namespace FinalProject
 
                     Position = camera.cameraPosition;
                     Forward = camera.target;
+                    scalarVelocity = camera.scalarVelocity;
+
+                    float? height = null;
+                    foreach (var t in map.terrainPieces)
+                    {
+                        height = t.Intersects(new Ray(Position, Vector3.Down));
+
+                        if (height != null)
+                            break;
+                    }
+
+                    if (height == null)
+                    {
+                        // out of bounds checking
+                    }
+                    else if (height - 25.0 < 0.0f)
+                    {
+                        status = VehicleState.CrashedGround;
+                        this.collider = "the ground";
+                        alive = false;
+                    }
 
                     if (alive)
                     {
@@ -107,8 +129,7 @@ namespace FinalProject
                         {
                             timeToNextFire = 0.0f;
                             var transpose = Matrix.Transpose(camera.view);
-                            var projectile = new Projectile(new BasicModel(Game1.ContentManager.Load<Model>(def.modelName), Vector3.Zero),
-                                                            Position, -transpose.Forward, weaponType, name);
+                            var projectile = new Projectile(Position, -transpose.Forward, -scalarVelocity, weaponType, name);
                             status = VehicleState.WeaponFired;
                         }
                     }
@@ -158,8 +179,7 @@ namespace FinalProject
                     {
                         case VehicleState.WeaponFired:
                             var def = Projectile.definitions[weaponType];
-                            var projectile = new Projectile(new BasicModel(Game1.ContentManager.Load<Model>(def.modelName), Vector3.Zero),
-                                                            Position, matrix.Forward, weaponType, name);
+                            var projectile = new Projectile(Position, matrix.Forward, scalarVelocity, weaponType, name);
                             break;
                     }
                 }

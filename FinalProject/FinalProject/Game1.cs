@@ -22,6 +22,8 @@ namespace FinalProject
     public class Game1 : Microsoft.Xna.Framework.Game
     {
         public static ContentManager ContentManager;
+        public static GraphicsDevice GraphicsDeviceRef;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Camera camera;
@@ -32,7 +34,6 @@ namespace FinalProject
         PacketWriter packetWriter;
         PacketReader packetReader;
         GameState currentGameState;
-        byte id = 0;
 
         public Game1()
         {
@@ -44,8 +45,6 @@ namespace FinalProject
             packetReader = new PacketReader();
 
             players = new List<Player>();
-
-            ContentManager = Content;
         }
 
         protected override void Initialize()
@@ -56,6 +55,8 @@ namespace FinalProject
 
         protected override void LoadContent() 
         {
+            ContentManager = Content;
+            GraphicsDeviceRef = GraphicsDevice;
         }
 
         protected override void UnloadContent() { }
@@ -99,6 +100,7 @@ namespace FinalProject
             // Set game state to InGame
             currentGameState = GameState.InGame;
             GameObjectManager.Instance.Reset();
+            map.Load();
             // Any other things that need to be set up
             //for beginning a game
             //Starting audio, resetting values, etc.
@@ -203,13 +205,14 @@ namespace FinalProject
         {
             var name = packetReader.ReadString();
             var weapon = packetReader.ReadString();
-
+            var speed = packetReader.ReadSingle();
             foreach (var player in players)
             {
                 if (player.name == name)
                 {
                     player.weaponType = weapon;
                     player.status = VehicleState.WeaponFired;
+                    player.scalarVelocity = speed;
                     break;
                 }
             }
@@ -219,8 +222,6 @@ namespace FinalProject
         {
             // Wire up events for gamers joining and leaving, defines what to do when a gamer
             //Joins or leaves the session
-            //networkSession.GamerJoined += GamerJoined;
-            //networkSession.GamerLeft += GamerLeft;
 
             networkSession.GamerJoined += new EventHandler<GamerJoinedEventArgs>(GamerJoined);
             networkSession.GamerLeft += new EventHandler<GamerLeftEventArgs>(GamerLeft);
@@ -245,7 +246,7 @@ namespace FinalProject
             map = new Map();
             
             if(camera == null)
-                camera = new Camera(this, new Vector3(0, 600, 0), new Vector3(0, 0, 1), new Vector3(0, 1, 0), map);
+                camera = new Camera(this, map);
 
             var gom = GameObjectManager.Instance;
             Components.Clear();
@@ -253,32 +254,73 @@ namespace FinalProject
                 gom = new GameObjectManager(this, camera);
             Components.Add(gom);
 
-            Terrain center = new Terrain(this, camera);
-            center.Load("image", Content.Load<Texture2D>("Map_c"), 256, 256, 5.0f, 1.0f, new MapOffset(), Content, GraphicsDevice);
-            
-            float mapOffSet = (float)Math.Abs(center.startPosition.X * 2);
+            #region Map
+            Terrain x0y0 = new Terrain("image", "Map_c", 0, 0);
+            Terrain x0y1 = new Terrain("image", "Map_c", 0, 1);
+            Terrain x0y2 = new Terrain("image", "Map_c", 0, 2);
+            Terrain x0y3 = new Terrain("image", "Map_c", 0, 3);
+            Terrain x0y4 = new Terrain("image", "Map_c", 0, 4);
 
-            Terrain left = new Terrain(this, camera);
-            MapOffset leftOffSet = new MapOffset(1, 0, 0, 0, mapOffSet);
-            left.Load("image", Content.Load<Texture2D>("Map_c"), 256, 256, 5.0f, 1.0f, leftOffSet, Content, GraphicsDevice);
+            Terrain x1y0 = new Terrain("image", "Map_c", 1, 0);
+            Terrain x1y1 = new Terrain("image", "Map_c", 1, 1);
+            Terrain x1y2 = new Terrain("image", "Map_c", 1, 2);
+            Terrain x1y3 = new Terrain("image", "Map_c", 1, 3);
+            Terrain x1y4 = new Terrain("image", "Map_c", 1, 4);
 
-            Terrain right = new Terrain(this, camera);
-            MapOffset rightOffSet = new MapOffset(0, 1, 0, 0, mapOffSet);
-            right.Load("image", Content.Load<Texture2D>("Map_c"), 256, 256, 5.0f, 1.0f, rightOffSet, Content, GraphicsDevice);
+            Terrain x2y0 = new Terrain("image", "Map_c", 2, 0);
+            Terrain x2y1 = new Terrain("image", "Map_c", 2, 1);
+            Terrain x2y2 = new Terrain("image", "Map_c", 2, 2);
+            Terrain x2y3 = new Terrain("image", "Map_c", 2, 3);
+            Terrain x2y4 = new Terrain("image", "Map_c", 2, 4);
 
-            Terrain up = new Terrain(this, camera);
-            MapOffset upOffSet = new MapOffset(0, 0, 0, 1, mapOffSet);
-            up.Load("image", Content.Load<Texture2D>("Map_c"), 256, 256, 5.0f, 1.0f, upOffSet, Content, GraphicsDevice);
+            Terrain x3y0 = new Terrain("image", "Map_c", 3, 0);
+            Terrain x3y1 = new Terrain("image", "Map_c", 3, 1);
+            Terrain x3y2 = new Terrain("image", "Map_c", 3, 2);
+            Terrain x3y3 = new Terrain("image", "Map_c", 3, 3);
+            Terrain x3y4 = new Terrain("image", "Map_c", 3, 4);
 
-            Terrain down = new Terrain(this, camera);
-            MapOffset downOffSet = new MapOffset(0, 0, 1, 0, mapOffSet);
-            down.Load("image", Content.Load<Texture2D>("Map_c"), 256, 256, 5.0f, 1.0f, downOffSet, Content, GraphicsDevice);
+            Terrain x4y0 = new Terrain("image", "Map_c", 4, 0);
+            Terrain x4y1 = new Terrain("image", "Map_c", 4, 1);
+            Terrain x4y2 = new Terrain("image", "Map_c", 4, 2);
+            Terrain x4y3 = new Terrain("image", "Map_c", 4, 3);
+            Terrain x4y4 = new Terrain("image", "Map_c", 4, 4);
 
-            map.terrainPieces.Add(center);
-            map.terrainPieces.Add(left);
-            map.terrainPieces.Add(right);
-            map.terrainPieces.Add(up);
-            map.terrainPieces.Add(down);
+            map.terrainPieces.Add(x0y0);
+            map.terrainPieces.Add(x0y1);
+            map.terrainPieces.Add(x0y2);
+            map.terrainPieces.Add(x0y3);
+            map.terrainPieces.Add(x0y4);
+
+            map.terrainPieces.Add(x1y0);
+            map.terrainPieces.Add(x1y1);
+            map.terrainPieces.Add(x1y2);
+            map.terrainPieces.Add(x1y3);
+            map.terrainPieces.Add(x1y4);
+
+            map.terrainPieces.Add(x2y0);
+            map.terrainPieces.Add(x2y1);
+            map.terrainPieces.Add(x2y2);
+            map.terrainPieces.Add(x2y3);
+            map.terrainPieces.Add(x2y4);
+
+            map.terrainPieces.Add(x3y0);
+            map.terrainPieces.Add(x3y1);
+            map.terrainPieces.Add(x3y2);
+            map.terrainPieces.Add(x3y3);
+            map.terrainPieces.Add(x3y4);
+
+            map.terrainPieces.Add(x4y0);
+            map.terrainPieces.Add(x4y1);
+            map.terrainPieces.Add(x4y2);
+            map.terrainPieces.Add(x4y3);
+            map.terrainPieces.Add(x4y4);
+
+            map.BottomLeft = x0y0;
+            #endregion
+
+            map.Load();
+
+            camera.PlaceCamera(new Vector3(0, 600, 0), new Vector3(0, 0, 1), Vector3.Up);
         }
 
         private object CreateLocalPlayer(string name)
@@ -342,6 +384,7 @@ namespace FinalProject
                                 packetWriter.Write((int)MessageType.WeaponFired);
                                 packetWriter.Write(localPlayer.name);
                                 packetWriter.Write(localPlayer.weaponType);
+                                packetWriter.Write(localPlayer.scalarVelocity);
                                 break;
                         }
                     }
@@ -426,7 +469,7 @@ namespace FinalProject
                 {
                     player = pl;
                     pl.Delete();
-                    //break;
+                    break;
                 }
             }
             players.Remove(player);
@@ -465,8 +508,6 @@ namespace FinalProject
             // Read any incoming messages
             ProcessIncomingData(gameTime);
         }
-
-        #region Network
 
         protected void Update_SignIn()
         {
@@ -545,8 +586,6 @@ namespace FinalProject
             ProcessIncomingData(gameTime);
         }
 
-#endregion
-
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -589,10 +628,7 @@ namespace FinalProject
                 p.Draw();
             }
 
-            foreach(var m in map.terrainPieces)
-            {
-                m.Draw(gameTime);
-            }
+            map.Draw(camera);
         }
     }
 }

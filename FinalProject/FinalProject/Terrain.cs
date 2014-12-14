@@ -12,51 +12,42 @@ using System.IO;
 
 namespace FinalProject
 {
-    struct MapOffset
-    {
-        public float TerrainLength;
-        public int left; // -x
-        public int right; // x
-        public int down; // z
-        public int up; // -z
-
-        public MapOffset(int l, int r, int d, int u, float tl)
-        {
-            left = l;
-            right = r;
-            down = d;
-            up = u;
-            TerrainLength = tl;
-        }
-    }
-
     class Map
     {
         // string is a LRUP combo, determining which direction to render the piece from the center. 
         public List<Terrain> terrainPieces;
         public List<Vector3> startingPositions;
-
-        public Map(List<Terrain> t, List<Vector3> s)
-        {
-            terrainPieces = t;
-            startingPositions = s;
-        }
+        public Terrain BottomLeft;
 
         public Map()
         {
             terrainPieces = new List<Terrain>();
             startingPositions = new List<Vector3>();
         }
+
+        public void Load()
+        {
+            BottomLeft.Load(256, 256, 5.0f, 1.0f, 0.0f);
+            float m = (float)Math.Abs(BottomLeft.startPosition.X * 2);
+            foreach(var t in terrainPieces)
+            {
+                t.Load(256, 256, 5.0f, 1.0f, m);
+            }
+        }
+
+        public void Draw(Camera camera)
+        {
+            foreach (var t in terrainPieces)
+            {
+                t.Draw(camera);
+            }
+        }
     }
 
     class Terrain // : Microsoft.Xna.Framework.DrawableGameComponent
     {
-        GraphicsDevice GraphicsDevice;
-
-        Vector3 offset;
-        public Camera camera;
         public Vector3 startPosition;
-
+        // 
         int vertexCountX;
         // Number of vertices of Vertex Grid in X direction, equivilent to the width of the height map image in pixels
         int vertexCountZ;
@@ -79,28 +70,29 @@ namespace FinalProject
         // Used for drawing the terrain
         Texture2D texture;
         // Texture placed over the terrain mesh
-        GraphicsDevice device;
+        string heightMap;
 
-        public Terrain(Game game, Camera camera)
+        int x; // grid x
+        int y; // grid y
+
+        public Terrain(string heightmap, string texture, int x, int y) 
         {
-            this.camera = camera;
+            this.texture = Game1.ContentManager.Load<Texture2D>(texture);
+            heightMap = heightmap;
+            this.x = x;
+            this.y = y;
         }
 
-        public void Load(string heightmapFileName, Texture2D texture, int vertexCountX, int vertexCountZ, float blockScale, float heightScale, MapOffset mapOffset, ContentManager Content, GraphicsDevice device)
+        public void Load(int vertexCountX, int vertexCountZ, float blockScale, float heightScale, float offsetAmount)
         {
-            var o = mapOffset;
-            offset = new Vector3(o.right * o.TerrainLength - o.left * o.TerrainLength,
-                                  0, o.down * o.TerrainLength - o.up * o.TerrainLength);
-
-            effect = new BasicEffect(device);
-            this.texture = texture;
+            var offset = new Vector3(x * offsetAmount, 0, y * offsetAmount);
+            effect = new BasicEffect(Game1.GraphicsDeviceRef);
             this.vertexCountX = vertexCountX;
             this.vertexCountZ = vertexCountZ;
             this.blockScale = blockScale;
             this.heightScale = heightScale;
 
-            GraphicsDevice = device;
-            FileStream filestream = File.OpenRead(Content.RootDirectory + "/" + heightmapFileName + ".raw");
+            FileStream filestream = File.OpenRead(Game1.ContentManager.RootDirectory + "/" + heightMap + ".raw");
 
             int heightmapSize = vertexCountX * vertexCountZ;
             this.heightmap = new byte[heightmapSize];
@@ -108,22 +100,22 @@ namespace FinalProject
             filestream.Read(heightmap, 0, heightmapSize);
             filestream.Close();
 
-            GenerateTerrainMesh();
+            GenerateTerrainMesh(offset);
         }
 
-        private void GenerateTerrainMesh()
+        private void GenerateTerrainMesh(Vector3 offset)
         {
             numVertices = vertexCountX * vertexCountZ;
             numTriangles = (vertexCountX - 1) * (vertexCountZ - 1) * 2;
             short[] indices = GenerateTerrainIndices();
-            VertexPositionTexture[] vertices = GenerateTerrainVertices(indices);
+            VertexPositionTexture[] vertices = GenerateTerrainVertices(indices, offset);
 
             startPosition = vertices[0].Position;
 
-            vb = new VertexBuffer(GraphicsDevice, typeof(VertexPositionTexture), numVertices, BufferUsage.WriteOnly);
+            vb = new VertexBuffer(Game1.GraphicsDeviceRef, typeof(VertexPositionTexture), numVertices, BufferUsage.WriteOnly);
             vb.SetData<VertexPositionTexture>(vertices);
 
-            ib = new IndexBuffer(GraphicsDevice, typeof(short), numTriangles * 3, BufferUsage.WriteOnly);
+            ib = new IndexBuffer(Game1.GraphicsDeviceRef, typeof(short), numTriangles * 3, BufferUsage.WriteOnly);
             ib.SetData<short>(indices);
         }
 
@@ -151,7 +143,7 @@ namespace FinalProject
             return indices;
         }
 
-        private VertexPositionTexture[] GenerateTerrainVertices(short[] terrainIndices)
+        private VertexPositionTexture[] GenerateTerrainVertices(short[] terrainIndices, Vector3 offset)
         {
             float halfTerrainWidth = (vertexCountX - 1) * blockScale * .5f;
             float halfTerrainDepth = (vertexCountZ - 1) * blockScale * .5f;
@@ -268,20 +260,16 @@ namespace FinalProject
             return collisionDistance;
         }
 
-        public void Draw(GameTime gameTime)
+        public void Draw(Camera camera)
         {
-            //if(offset == Vector3.Zero)
-                effect.World = Matrix.Identity; //No transformation of the terrain
-            //else
-                //effect.World = Matrix.CreateWorld(offset, Vector3.Forward, Vector3.Up);
-
+            effect.World = Matrix.Identity; //No transformation of the terrain
             effect.View = camera.view;
             effect.Projection = camera.projection;
             effect.Texture = texture;
             effect.TextureEnabled = true;
 
-            GraphicsDevice.SetVertexBuffer(vb);
-            GraphicsDevice.Indices = ib;
+            Game1.GraphicsDeviceRef.SetVertexBuffer(vb);
+            Game1.GraphicsDeviceRef.Indices = ib;
 
             foreach (EffectPass CurrentPass in effect.CurrentTechnique.Passes)
             {
@@ -296,7 +284,7 @@ namespace FinalProject
                 int index = 0;
                 for(int i = 1; index != ib.IndexCount; i++)
                 {
-                    GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, nTriangles * 3, index, nTriangles);
+                    Game1.GraphicsDeviceRef.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, nTriangles * 3, index, nTriangles);
                     //Draw all triangles that make up the mesh
 
                     index += 3 * nTriangles;

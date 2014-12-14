@@ -41,13 +41,15 @@ namespace FinalProject
         };
 
         Vector3 dir;
+        float baseVelocity;
         float lifeTime;
 
-        public Projectile(BasicModel m, Vector3 pos, Vector3 d, string name, string owner) : base(m, true, name, owner)
+        public Projectile(Vector3 pos, Vector3 d, float baseVel, string name, string owner)
+            : base(new BasicModel(Game1.ContentManager.Load<Model>(definitions[name].modelName), Vector3.Zero), true, name, owner)
         {
             lifeTime = 0.0f;
-            model = m;
             dir = d;
+            baseVelocity = baseVel;
             world = Matrix.CreateWorld(pos, d, Vector3.Up);
         }
 
@@ -62,7 +64,7 @@ namespace FinalProject
             }
 
             var pos = world.Translation;
-            pos += dir * (float)gameTime.ElapsedGameTime.TotalSeconds * def.speed;
+            pos += (dir * baseVelocity) + dir * (float)gameTime.ElapsedGameTime.TotalSeconds * def.speed;
             world = Matrix.CreateWorld(pos, dir, Vector3.Up);
 
             base.Update(gameTime);
