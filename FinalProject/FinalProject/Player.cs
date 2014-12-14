@@ -62,59 +62,66 @@ namespace FinalProject
             timeToNextFire += (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (localPlayer)
             {
-                if(alive)
-                    status = VehicleState.Alive;
-                camera.Update(gameTime);
-
-                if (gameObject != null)
+                if (alive)
                 {
-                    var colliders = GameObjectManager.Instance.CheckCollision(gameObject);
-                    List<Projectile> projectiles2 = new List<Projectile>();
-                    this.collider = null;
-                    foreach (var collider in colliders)
+                    status = VehicleState.Alive;
+                    camera.Update(gameTime);
+
+                    if (gameObject != null)
                     {
-                        switch (collider.type)
+                        var colliders = GameObjectManager.Instance.CheckCollision(gameObject);
+                        List<Projectile> projectiles2 = new List<Projectile>();
+                        this.collider = null;
+                        foreach (var collider in colliders)
                         {
-                            case "vehicle":
-                                status = VehicleState.CrashedVehicle;
-                                this.collider = collider.owner;
-                                alive = false;
-                                Delete();
-                                break;
-                            case "projectile":
-                                if (collider.owner != name)
-                                {
-                                    var def = Projectile.definitions[collider.type];
-                                    health -= def.damage;
-                                    projectiles2.Add((Projectile)collider);
-                                }
-                                break;
+                            switch (collider.type)
+                            {
+                                case "vehicle":
+                                    status = VehicleState.CrashedVehicle;
+                                    this.collider = collider.owner;
+                                    alive = false;
+                                    Delete();
+                                    break;
+                                case "projectile":
+                                    if (collider.owner != name)
+                                    {
+                                        var def = Projectile.definitions[collider.type];
+                                        health -= def.damage;
+                                        projectiles2.Add((Projectile)collider);
+                                    }
+                                    break;
+                            }
+                        }
+
+                        foreach (var p in projectiles2)
+                            GameObjectManager.Instance.RemoveGameObject(p);
+                    }
+
+                    Position = camera.cameraPosition;
+                    Forward = camera.target;
+
+                    if (alive)
+                    {
+                        var def = Projectile.definitions[weaponType];
+
+                        if (Mouse.GetState().LeftButton == ButtonState.Pressed && def.fireTime - timeToNextFire <= 0.0f)
+                        {
+                            timeToNextFire = 0.0f;
+                            var transpose = Matrix.Transpose(camera.view);
+                            var projectile = new Projectile(new BasicModel(Game1.ContentManager.Load<Model>(def.modelName), Vector3.Zero),
+                                                            Position, -transpose.Forward, weaponType, name);
+                            status = VehicleState.WeaponFired;
                         }
                     }
 
-                    foreach (var p in projectiles2)
-                        GameObjectManager.Instance.RemoveGameObject(p);
+                    if (gameObject != null)
+                        gameObject.world = Matrix.CreateWorld(Position, -(Forward - Position), Vector3.Up);
                 }
-
-                Position = camera.cameraPosition;
-                Forward = camera.target;
-
-                if (alive)
+                else
                 {
-                    var def = Projectile.definitions[weaponType];
-
-                    if (Mouse.GetState().LeftButton == ButtonState.Pressed && def.fireTime - timeToNextFire <= 0.0f)
-                    {
-                        timeToNextFire = 0.0f;
-                        var transpose = Matrix.Transpose(camera.view);
-                        var projectile = new Projectile(new BasicModel(Game1.ContentManager.Load<Model>(def.modelName), Vector3.Zero),
-                                                        Position,-transpose.Forward,weaponType, name);
-                        status = VehicleState.WeaponFired;
-                    }
+                    status = VehicleState.Died;
+                    // dead stuff here
                 }
-
-                if(gameObject != null)
-                    gameObject.world = Matrix.CreateWorld(Position, -(Forward - Position), Vector3.Up);
             }
             else
             {
@@ -132,6 +139,11 @@ namespace FinalProject
                                                         Position, matrix.Forward, weaponType, name);
                         break;
                 }
+
+                if (alive)
+                    status = VehicleState.Alive;
+                else
+                    status = VehicleState.Died;
             }
         }
 
