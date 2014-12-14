@@ -79,7 +79,6 @@ namespace FinalProject
                                     status = VehicleState.CrashedVehicle;
                                     this.collider = collider.owner;
                                     alive = false;
-                                    Delete();
                                     break;
                                 case "projectile":
                                     if (collider.owner != name)
@@ -116,30 +115,59 @@ namespace FinalProject
                 else
                 {
                     status = VehicleState.Died;
-                    // dead stuff here
+                    Delete();
                 }
             }
             else
             {
-                var matrix = Matrix.CreateWorld(Position, -(Forward - Position), Vector3.Up);
-                if (gameObject != null)
-                {
-                    gameObject.world = matrix;
-                }
-
-                switch(status)
-                {
-                    case VehicleState.WeaponFired:
-                        var def = Projectile.definitions[weaponType];
-                        var projectile = new Projectile(new BasicModel(Game1.ContentManager.Load<Model>(def.modelName), Vector3.Zero),
-                                                        Position, matrix.Forward, weaponType, name);
-                        break;
-                }
-
                 if (alive)
                     status = VehicleState.Alive;
                 else
                     status = VehicleState.Died;
+
+                if (alive)
+                {
+                    var matrix = Matrix.CreateWorld(Position, -(Forward - Position), Vector3.Up);
+                    if (gameObject != null)
+                    {
+                        gameObject.world = matrix;
+                    }
+
+                    var colliders = GameObjectManager.Instance.CheckCollision(gameObject);
+                    this.collider = null;
+                    foreach (var collider in colliders)
+                    {
+                        switch (collider.type)
+                        {
+                            case "vehicle":
+                                status = VehicleState.CrashedVehicle;
+                                this.collider = collider.owner;
+                                alive = false;
+                                break;
+                            case "projectile":
+                                if (collider.owner != name)
+                                {
+                                    var def = Projectile.definitions[collider.type];
+                                    health -= def.damage;
+                                    GameObjectManager.Instance.Delete(collider);
+                                }
+                                break;
+                        }
+                    }
+
+                    switch (status)
+                    {
+                        case VehicleState.WeaponFired:
+                            var def = Projectile.definitions[weaponType];
+                            var projectile = new Projectile(new BasicModel(Game1.ContentManager.Load<Model>(def.modelName), Vector3.Zero),
+                                                            Position, matrix.Forward, weaponType, name);
+                            break;
+                    }
+                }
+                else
+                {
+                    Delete();
+                }
             }
         }
 
