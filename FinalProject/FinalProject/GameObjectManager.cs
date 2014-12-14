@@ -17,6 +17,7 @@ namespace FinalProject
     {
         private static GameObjectManager instance;
 
+        private List<GameObject> markedForDeletion;
         private List<GameObject> gameObjects;
         private Camera camera;
 
@@ -37,7 +38,13 @@ namespace FinalProject
         {
             instance = this;
             gameObjects = new List<GameObject>();
+            markedForDeletion = new List<GameObject>();
             camera = c;
+        }
+
+        public void Delete(GameObject obj)
+        {
+            markedForDeletion.Add(obj);
         }
 
         public List<GameObject> CheckCollision(GameObject obj)
@@ -61,6 +68,9 @@ namespace FinalProject
 
             foreach(var go in gameObjects)
                 go.Update(gameTime);
+
+            gameObjects = gameObjects.Except(markedForDeletion).ToList();
+            markedForDeletion.Clear();
         }
 
         public override void Draw(GameTime gameTime)
@@ -76,7 +86,7 @@ namespace FinalProject
             gameObjects.Add(gameObject);
         }
 
-        public void RemoveGameObject(GameObject gameObject)
+        public void RemoveGameObjectNow(GameObject gameObject)
         {
             gameObjects.Remove(gameObject);
         }

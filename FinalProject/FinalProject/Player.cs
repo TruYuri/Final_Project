@@ -70,7 +70,6 @@ namespace FinalProject
                     if (gameObject != null)
                     {
                         var colliders = GameObjectManager.Instance.CheckCollision(gameObject);
-                        List<Projectile> projectiles2 = new List<Projectile>();
                         this.collider = null;
                         foreach (var collider in colliders)
                         {
@@ -87,14 +86,11 @@ namespace FinalProject
                                     {
                                         var def = Projectile.definitions[collider.type];
                                         health -= def.damage;
-                                        projectiles2.Add((Projectile)collider);
+                                        GameObjectManager.Instance.Delete(collider);
                                     }
                                     break;
                             }
                         }
-
-                        foreach (var p in projectiles2)
-                            GameObjectManager.Instance.RemoveGameObject(p);
                     }
 
                     Position = camera.cameraPosition;
@@ -149,7 +145,7 @@ namespace FinalProject
 
         public void Delete()
         {
-            GameObjectManager.Instance.RemoveGameObject(gameObject);
+            GameObjectManager.Instance.Delete(gameObject);
             gameObject = null;
         }
 

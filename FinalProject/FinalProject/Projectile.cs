@@ -58,7 +58,7 @@ namespace FinalProject
 
             if(lifeTime >= def.timeToLive)
             {
-                GameObjectManager.Instance.RemoveGameObject(this);
+                GameObjectManager.Instance.Delete(this);
             }
 
             var pos = world.Translation;
