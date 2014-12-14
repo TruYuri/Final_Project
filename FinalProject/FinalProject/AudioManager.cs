@@ -32,9 +32,9 @@ namespace FinalProject
 
         public AudioManager(Game game) : base(game)
         {
-            m_audioEngine = new AudioEngine(@"Content\Audio\Lunar_Lander_Audio.xgs");
-            m_waveBank = new WaveBank(m_audioEngine, @"Content\Audio\Wave Bank.xwb");
-            m_soundBank = new SoundBank(m_audioEngine, @"Content\Audio\Sound Bank.xsb");
+            m_audioEngine = new AudioEngine("Content\\FinalProjectAudio.xgs");
+            //m_waveBank = new WaveBank(m_audioEngine, "Content\\Wave Bank.xwb");
+           // m_soundBank = new SoundBank(m_audioEngine, "Content\\Sound Bank.xsb");
 
             m_audioQueue = new Dictionary<string, Cue>();
             MediaPlayer.IsRepeating = true;

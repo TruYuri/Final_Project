@@ -93,7 +93,14 @@ namespace FinalProject
                                     {
                                         var def = Projectile.definitions[collider.type];
                                         health -= def.damage;
+                                        health = Math.Max(health, 0.0f);
                                         GameObjectManager.Instance.Delete(collider);
+
+                                        if (health <= 0.0f)
+                                        {
+                                            alive = false;
+                                            status = VehicleState.Died;
+                                        }
                                     }
                                     break;
                             }
