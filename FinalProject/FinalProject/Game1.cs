@@ -637,12 +637,14 @@ namespace FinalProject
         protected override void Draw(GameTime gameTime)
         {
             // Only draw when game is active
+
             if (this.IsActive)
             {
+                GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+                GraphicsDevice.BlendState = BlendState.Opaque;
+
                 GraphicsDevice.SetRenderTarget(renderTarget);
                 GraphicsDevice.Clear(Color.CornflowerBlue);
-                GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-
                 // Based on the current game state,
                 // call the appropriate method
                 switch (currentGameState)
@@ -668,7 +670,8 @@ namespace FinalProject
             }
 
             GraphicsDevice.SetRenderTarget(null);
-            spriteBatch.Begin();
+
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
             spriteBatch.Draw(renderTarget, new Rectangle(0, 0, xRes, yRes), Color.White);
             iface.Draw(spriteBatch, currentGameState, localPlayer);
             spriteBatch.End();

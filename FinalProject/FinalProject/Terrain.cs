@@ -31,8 +31,8 @@ namespace FinalProject
         {
             Random rand = new Random();
             float m = (float)Math.Abs(BottomLeft.startPosition.X * 2);
-            float x = 0.0f - m + m * Size.X * (float)rand.NextDouble();
-            float z = 0.0f - m + m * Size.Y * (float)rand.NextDouble();
+            float x = m * Size.X * (float)rand.NextDouble();
+            float z = m * Size.Y * (float)rand.NextDouble();
 
             return new Vector3(x, y, z);
         }

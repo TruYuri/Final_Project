@@ -37,7 +37,8 @@ namespace FinalProject
     {
         public static Dictionary<string, ProjectileDefinition> definitions = new Dictionary<string, ProjectileDefinition>()
         {
-            { "projectile", new ProjectileDefinition("projectile", "spaceship", 20.0f, -10.0f, 500.0f, 0.5f) }
+            { "bullet", new ProjectileDefinition("bullet", "spaceship", 20.0f, -10.0f, 500.0f, 1.0f) },
+            { "rocket", new ProjectileDefinition("rocket", "spaceship", 20.0f, -10.0f, 500.0f, 0.1f) }
         };
 
         Vector3 dir;

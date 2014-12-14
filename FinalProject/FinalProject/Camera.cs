@@ -27,6 +27,7 @@ namespace FinalProject
         Map map;
         float throttle;
         float throttleRate;
+        float roll;
 
         public Camera(Game game, Map t)
         {
@@ -44,6 +45,7 @@ namespace FinalProject
         private void CreateLookAt()
         {
             view = Matrix.CreateLookAt(cameraPosition, target, cameraUp);
+            view *= Matrix.CreateRotationX(roll);
         }
 
         public void Update(GameTime gameTime)
@@ -63,16 +65,23 @@ namespace FinalProject
                 throttle = Math.Max(throttle - throttleRate * time, 0.05f);
 
             velocity = cameraDirection * 1000 * throttle * s * time;
-
             cameraPosition += velocity;
             target += velocity;
 
             // Mouse
+
             mState = Mouse.GetState();
             Vector3 dist = cameraPosition - target;
             cameraDirection = -dist;
-            if (cameraPosition != Vector3.Zero)
+            if (cameraDirection != Vector3.Zero)
                 cameraDirection.Normalize();
+
+            float roll = 0.0f;
+            if (kState.IsKeyDown(Keys.A))
+                roll += (float)MathHelper.PiOver4 * time;
+            else if (kState.IsKeyDown(Keys.D))
+                roll -= (float)MathHelper.PiOver4 * time;
+            cameraUp = Vector3.Lerp(cameraUp, Vector3.Cross(cameraUp, cameraDirection), roll / (float)MathHelper.PiOver2);
 
             // rotate an object around the camera, make that the target
             var xZRotation = (float)Math.Atan2(dist.Z, dist.X) - MathHelper.Pi;
@@ -91,6 +100,7 @@ namespace FinalProject
             target.Z = cameraPosition.Z + dist.Length() * (float)Math.Sin(xZRotation) * (float)Math.Sin(yRotation);
             target.Y = cameraPosition.Y + dist.Length() * (float)Math.Cos(yRotation);
 
+            //target = Vector3.Transform(target, Matrix.CreateFromAxisAngle(cameraDirection, roll));
             CreateLookAt();
             prevMouseState = mState;
         }

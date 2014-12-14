@@ -35,6 +35,11 @@ namespace FinalProject
         bool localPlayer;
         float timeToNextFire;
         BasicModel model;
+        List<string> availableWeapons;
+
+        float weaponChangeTime;
+        int weaponIndex;
+        int prevMouseWheel;
 
         public Player(Game game, Camera c, Map t, bool local, string n)
         {
@@ -45,9 +50,12 @@ namespace FinalProject
             localPlayer = local;
             alive = true;
             status = PlayerState.Alive;
-            weaponType = "projectile";
+            weaponType = "bullet";
             timeToNextFire = Projectile.definitions[weaponType].fireTime;
             lives = 5;
+            availableWeapons = new List<string>() { "bullet", "rocket" };
+            weaponChangeTime = 0.0f;
+            prevMouseWheel = Mouse.GetState().ScrollWheelValue;
         }
 
         public void Initialize()
@@ -70,7 +78,10 @@ namespace FinalProject
             var mState = Mouse.GetState();
             var kState = Keyboard.GetState();
             float time = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
             timeToNextFire += time;
+            weaponChangeTime -= time;
+
             if (localPlayer)
             {
                 if (alive)
@@ -154,6 +165,23 @@ namespace FinalProject
                     if (alive)
                     {
                         var def = Projectile.definitions[weaponType];
+
+                        if(weaponChangeTime <= 0.0f)
+                        {
+                            if(mState.ScrollWheelValue < prevMouseWheel || kState.IsKeyDown(Keys.Q))
+                            {
+                                weaponChangeTime = 0.5f;
+                                weaponIndex = (weaponIndex + 1) % availableWeapons.Count();
+                                timeToNextFire = 0.0f;
+                            }
+                            else if(mState.ScrollWheelValue > prevMouseWheel || kState.IsKeyDown(Keys.E))
+                            {
+                                weaponChangeTime = 0.0f;
+                                weaponIndex = (weaponIndex - 1 < 0 ? availableWeapons.Count - 1 : weaponIndex - 1);
+                            }
+
+                            weaponType = availableWeapons[weaponIndex];
+                        }
 
                         if ((mState.LeftButton == ButtonState.Pressed || kState.IsKeyDown(Keys.Space)) && def.fireTime - timeToNextFire <= 0.0f)
                         {
