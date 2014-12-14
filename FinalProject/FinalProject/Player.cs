@@ -13,10 +13,10 @@ using Microsoft.Xna.Framework.Net;
 
 namespace FinalProject
 {
-    public enum VehicleState { Alive, WeaponFired, CrashedGround, CrashedVehicle, TookDamage, Died, Respawn }
+    public enum PlayerState { Alive, WeaponFired, CrashedGround, CrashedVehicle, TookDamage, Died, Respawn }
     class Player
     {
-        public VehicleState status;
+        public PlayerState status;
         public string collider;
         public string weaponType;
         public float health;
@@ -44,7 +44,7 @@ namespace FinalProject
             map = t;
             localPlayer = local;
             alive = true;
-            status = VehicleState.Alive;
+            status = PlayerState.Alive;
             weaponType = "projectile";
             timeToNextFire = Projectile.definitions[weaponType].fireTime;
             lives = 5;
@@ -74,10 +74,10 @@ namespace FinalProject
             if (localPlayer)
             {
                 if (alive)
-                    status = VehicleState.Alive;
+                    status = PlayerState.Alive;
                 else
                 {
-                    status = VehicleState.Died;
+                    status = PlayerState.Died;
                     respawnTimer -= time;
                     if(respawnTimer <= 0.0f)
                     {
@@ -85,7 +85,7 @@ namespace FinalProject
                         var c = map.Center(600);
                         camera.PlaceCamera(map.CreateRandomSpawnAtHeight(600), c - pos, Vector3.Up);
                         Initialize();
-                        status = VehicleState.Respawn;
+                        status = PlayerState.Respawn;
                         return;
                     }
                 }
@@ -103,7 +103,7 @@ namespace FinalProject
                             switch (collider.type)
                             {
                                 case "vehicle":
-                                    status = VehicleState.CrashedVehicle;
+                                    status = PlayerState.CrashedVehicle;
                                     this.collider = collider.owner;
                                     alive = false;
                                     break;
@@ -118,7 +118,7 @@ namespace FinalProject
                                         if (health <= 0.0f)
                                         {
                                             alive = false;
-                                            status = VehicleState.Died;
+                                            status = PlayerState.Died;
                                         }
                                     }
                                     break;
@@ -142,10 +142,11 @@ namespace FinalProject
                     if (height == null)
                     {
                         // out of bounds checking
+
                     }
                     else if (height - 25.0 < 0.0f)
                     {
-                        status = VehicleState.CrashedGround;
+                        status = PlayerState.CrashedGround;
                         this.collider = "the ground";
                         alive = false;
                     }
@@ -159,7 +160,7 @@ namespace FinalProject
                             timeToNextFire = 0.0f;
                             var transpose = Matrix.Transpose(camera.view);
                             var projectile = new Projectile(Position, -transpose.Forward, Velocity, weaponType, name);
-                            status = VehicleState.WeaponFired;
+                            status = PlayerState.WeaponFired;
                         }
                     }
 
@@ -173,7 +174,7 @@ namespace FinalProject
                 }
                 else
                 {
-                    status = VehicleState.Died;
+                    status = PlayerState.Died;
                     Delete();
                 }
             }
@@ -194,7 +195,7 @@ namespace FinalProject
                         switch (collider.type)
                         {
                             case "vehicle":
-                                status = VehicleState.CrashedVehicle;
+                                status = PlayerState.CrashedVehicle;
                                 this.collider = collider.owner;
                                 alive = false;
                                 break;
@@ -211,7 +212,7 @@ namespace FinalProject
 
                     switch (status)
                     {
-                        case VehicleState.WeaponFired:
+                        case PlayerState.WeaponFired:
                             var def = Projectile.definitions[weaponType];
                             var projectile = new Projectile(Position, matrix.Forward, Velocity, weaponType, name);
                             break;
@@ -219,9 +220,9 @@ namespace FinalProject
                 }
 
                 if (alive)
-                    status = VehicleState.Alive;
+                    status = PlayerState.Alive;
                 else
-                    status = VehicleState.Died;
+                    status = PlayerState.Died;
             }
         }
 

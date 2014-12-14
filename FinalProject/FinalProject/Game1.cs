@@ -26,19 +26,29 @@ namespace FinalProject
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+
         Camera camera;
         Player localPlayer;
         List<Player> players;
         Map map;
+        Interface iface;
+
         NetworkSession networkSession;
         PacketWriter packetWriter;
         PacketReader packetReader;
         GameState currentGameState;
 
+        RenderTarget2D renderTarget;
+        public static int xRes = 1024; // 1200; //1440; // 960;
+        public static int yRes = 640; // 750; // 900; //600;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
+            graphics.PreferredBackBufferHeight = yRes;
+            graphics.PreferredBackBufferWidth = xRes;
 
             currentGameState = GameState.SignIn;
             packetWriter = new PacketWriter();
@@ -55,8 +65,11 @@ namespace FinalProject
 
         protected override void LoadContent() 
         {
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+            iface = new Interface();
             ContentManager = Content;
             GraphicsDeviceRef = GraphicsDevice;
+            renderTarget = new RenderTarget2D(GraphicsDevice, xRes, yRes, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
         }
 
         protected override void UnloadContent() { }
@@ -99,6 +112,7 @@ namespace FinalProject
         {
             // Set game state to InGame
             currentGameState = GameState.InGame;
+            Interface.LoadGameplayInterface(players, camera);
             //GameObjectManager.Instance.Reset();
             //map.Load();
             // Any other things that need to be set up
@@ -179,23 +193,23 @@ namespace FinalProject
         protected void Kill()
         {
             // Get the other (non-local) player
-            VehicleState killType = (VehicleState)packetReader.ReadInt32();
+            PlayerState killType = (PlayerState)packetReader.ReadInt32();
             string name;
             string name2;
 
             switch (killType)
             {
-                case VehicleState.CrashedGround:
+                case PlayerState.CrashedGround:
                     name = packetReader.ReadString();
                     FindAndKill(name);
                     break;
-                case VehicleState.CrashedVehicle:
+                case PlayerState.CrashedVehicle:
                     name = packetReader.ReadString();
                     name2 = packetReader.ReadString();
                     FindAndKill(name);
                     FindAndKill(name2);
                     break;
-                case VehicleState.Died:
+                case PlayerState.Died:
                     name = packetReader.ReadString();
                     FindAndKill(name);
                     break;
@@ -232,7 +246,7 @@ namespace FinalProject
                 if (player.name == name)
                 {
                     player.weaponType = weapon;
-                    player.status = VehicleState.WeaponFired;
+                    player.status = PlayerState.WeaponFired;
                     break;
                 }
             }
@@ -258,7 +272,7 @@ namespace FinalProject
                 e.Gamer.Tag = CreateRemotePlayer(e.Gamer.Gamertag);
 
             if (e.Gamer.IsHost)
-                currentGameState = GameState.InGame;
+                currentGameState = GameState.Start;
         }
 
         private void InitializeLevel()
@@ -383,7 +397,7 @@ namespace FinalProject
             //Boolean used to inform the Update function that the local player is calling update,          //therefore update based on local input
             localPlayer.Update(gameTime);
 
-            if(localPlayer.status == VehicleState.CrashedVehicle)
+            if(localPlayer.status == PlayerState.CrashedVehicle)
             {
                 FindAndKill(localPlayer.collider);
             }
@@ -406,15 +420,15 @@ namespace FinalProject
 
                         switch(localPlayer.status)
                         {
-                            case VehicleState.TookDamage:
+                            case PlayerState.TookDamage:
                                 break;
-                            case VehicleState.WeaponFired:
+                            case PlayerState.WeaponFired:
                                 packetWriter.Write((int)MessageType.WeaponFired);
                                 packetWriter.Write(localPlayer.name);
                                 packetWriter.Write(localPlayer.weaponType);
                                 localGamer.SendData(packetWriter, SendDataOptions.InOrder, gamer);
                                 break;
-                            case VehicleState.Respawn:
+                            case PlayerState.Respawn:
                                 packetWriter.Write((int)MessageType.Respawn);
                                 packetWriter.Write(localPlayer.name);
                                 localGamer.SendData(packetWriter, SendDataOptions.InOrder, gamer);
@@ -427,14 +441,14 @@ namespace FinalProject
                         packetWriter.Write((int)localPlayer.status);
                         switch(localPlayer.status)
                         {
-                            case VehicleState.CrashedGround:
+                            case PlayerState.CrashedGround:
                                 packetWriter.Write(localPlayer.name);
                                 break;
-                            case VehicleState.CrashedVehicle:
+                            case PlayerState.CrashedVehicle:
                                 packetWriter.Write(localPlayer.collider);
                                 packetWriter.Write(localPlayer.name);
                                 break;
-                            case VehicleState.Died:
+                            case PlayerState.Died:
                                 packetWriter.Write(localPlayer.name);
                                 break;
                         }
@@ -508,7 +522,7 @@ namespace FinalProject
             players.Remove(player);
         
 		    //Go back to looking for another session
-		    // currentGameState = GameState.FindSession;
+		    currentGameState = GameState.FindSession;
         }
 
         private void Update_GameOver(GameTime gameTime)
@@ -600,7 +614,8 @@ namespace FinalProject
             
             // Check for game start key or button press
             // only if there are two players
-            if (networkSession.AllGamers.Count == 2)
+            //if (networkSession.AllGamers.Count == 2)
+            if(localPlayer != null)
             {
                 // If space bar or Start button is pressed, begin the game
                 //if (Keyboard.GetState().IsKeyDown(Keys.Space) ||
@@ -621,11 +636,12 @@ namespace FinalProject
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-
             // Only draw when game is active
             if (this.IsActive)
             {
+                GraphicsDevice.SetRenderTarget(renderTarget);
+                GraphicsDevice.Clear(Color.CornflowerBlue);
+
                 // Based on the current game state,
                 // call the appropriate method
                 switch (currentGameState)
@@ -649,6 +665,12 @@ namespace FinalProject
                         break;
                 }
             }
+
+            GraphicsDevice.SetRenderTarget(null);
+            spriteBatch.Begin();
+            spriteBatch.Draw(renderTarget, new Rectangle(0, 0, xRes, yRes), Color.White);
+            iface.Draw(spriteBatch, currentGameState, localPlayer);
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
