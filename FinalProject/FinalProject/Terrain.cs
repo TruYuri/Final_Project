@@ -18,11 +18,32 @@ namespace FinalProject
         public List<Terrain> terrainPieces;
         public List<Vector3> startingPositions;
         public Terrain BottomLeft;
+        public Vector2 Size;
 
-        public Map()
+        public Map(Vector2 s)
         {
+            Size = s;
             terrainPieces = new List<Terrain>();
             startingPositions = new List<Vector3>();
+        }
+
+        public Vector3 CreateRandomSpawnAtHeight(float y)
+        {
+            Random rand = new Random();
+            float m = (float)Math.Abs(BottomLeft.startPosition.X * 2);
+            float x = 0.0f - m + m * Size.X * (float)rand.NextDouble();
+            float z = 0.0f - m + m * Size.Y * (float)rand.NextDouble();
+
+            return new Vector3(x, y, z);
+        }
+
+        public Vector3 Center(float y)
+        {
+            float m = (float)Math.Abs(BottomLeft.startPosition.X * 2);
+            float x = 0.0f - m + (m * Size.X) / 2;
+            float z = 0.0f - m + (m * Size.Y) / 2;
+
+            return new Vector3(x, y, z);
         }
 
         public void Load()

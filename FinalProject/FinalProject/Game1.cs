@@ -204,6 +204,13 @@ namespace FinalProject
 
         private void FindAndKill(string name)
         {
+            if(name == localPlayer.name)
+            {
+                localPlayer.Delete();
+                localPlayer.alive = false;
+                localPlayer.health = 0;
+            }
+
             foreach (var player in players)
             {
                 if (player.name == name)
@@ -256,7 +263,7 @@ namespace FinalProject
 
         private void InitializeLevel()
         {
-            map = new Map();
+            map = new Map(new Vector2(5, 5));
             
             if(camera == null)
                 camera = new Camera(this, map);
@@ -337,7 +344,9 @@ namespace FinalProject
 
             map.Load();
 
-            camera.PlaceCamera(new Vector3(0, 600, 0), new Vector3(0, 0, 1), Vector3.Up);
+            var pos = map.CreateRandomSpawnAtHeight(600);
+            var c = map.Center(600);
+            camera.PlaceCamera(map.CreateRandomSpawnAtHeight(600), c - pos, Vector3.Up);
         }
 
         private object CreateLocalPlayer(string name)

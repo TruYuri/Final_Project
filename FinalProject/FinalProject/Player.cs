@@ -63,7 +63,6 @@ namespace FinalProject
                 gameObject = new GameObject(new BasicModel(Game1.ContentManager.Load<Model>("spaceship"), new Vector3(0, 600, 0)), true, "vehicle", name);
             gameObject.world = Matrix.CreateWorld(Position, -(Forward - Position), Vector3.Up);
             alive = true;
-            status = VehicleState.Alive;
         }
 
         public void Update(GameTime gameTime)
@@ -82,9 +81,11 @@ namespace FinalProject
                     respawnTimer -= time;
                     if(respawnTimer <= 0.0f)
                     {
-                        status = VehicleState.Respawn;
-                        camera.PlaceCamera(new Vector3(0, 600, 0), new Vector3(0, 0, 1), Vector3.Up);
+                        var pos = map.CreateRandomSpawnAtHeight(600);
+                        var c = map.Center(600);
+                        camera.PlaceCamera(map.CreateRandomSpawnAtHeight(600), c - pos, Vector3.Up);
                         Initialize();
+                        status = VehicleState.Respawn;
                         return;
                     }
                 }

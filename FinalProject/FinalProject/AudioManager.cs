@@ -40,7 +40,7 @@ namespace FinalProject
             MediaPlayer.IsRepeating = true;
         }
 
-        public void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             m_audioEngine.Update();
         }
