@@ -81,12 +81,20 @@ namespace FinalProject
             if (cameraDirection != Vector3.Zero)
                 cameraDirection.Normalize();
 
+            float xChange = 0.0f;
+            if (kState.IsKeyDown(Keys.A))
+                xChange -= 5.0f * MathHelper.PiOver4 / 4 * time;
+            if (kState.IsKeyDown(Keys.D))
+                xChange += 5.0f * MathHelper.PiOver4 / 4 * time;
+
+            /*
             float roll = 0.0f;
             if (kState.IsKeyDown(Keys.A))
                 roll += (float)MathHelper.PiOver4 * time;
             else if (kState.IsKeyDown(Keys.D))
                 roll -= (float)MathHelper.PiOver4 * time;
             cameraUp = Vector3.Lerp(cameraUp, Vector3.Cross(cameraUp, cameraDirection), roll / (float)MathHelper.PiOver2);
+             */
 
             // rotate an object around the camera, make that the target
             var xZRotation = (float)Math.Atan2(dist.Z, dist.X) - MathHelper.Pi;
@@ -95,8 +103,8 @@ namespace FinalProject
 
             var xDiff = mState.X - screenCenterX;
             var yDiff = mState.Y - screenCenterY;
-            xZRotation += (xDiff) * MathHelper.PiOver4 / 4 * time;
-            yRotation += (yDiff) * MathHelper.PiOver4 / 4 * time;
+            xZRotation += xDiff * MathHelper.PiOver4 / 4 * time + xChange;
+            yRotation += yDiff * MathHelper.PiOver4 / 4 * time;
 
             if (yRotation < 0.01f)
                 yRotation = 0.01f;

@@ -21,6 +21,8 @@ namespace FinalProject
         public string weaponType;
         public float health;
         public float  shield;
+        public float healthMax;
+        public float shieldMax;
         public bool alive;
         public string name;
         public Vector3 Position;
@@ -45,8 +47,8 @@ namespace FinalProject
 
         public Player(Game game, Camera c, Map t, bool local, string n)
         {
-            health = 1000.0f;
-            shield = 1000.0f;
+            health = healthMax = 1000.0f;
+            shield = shieldMax = 1000.0f;
             name = n;
             camera = c;
             map = t;
@@ -74,8 +76,8 @@ namespace FinalProject
                 gameObject = new GameObject(new BasicModel(Game1.ContentManager.Load<Model>("spaceship"), new Vector3(0, 600, 0)), true, "vehicle", name);
             gameObject.world = Matrix.CreateWorld(Position, Forward, Vector3.Up);
             alive = true;
-            health = 1000.0f;
-            shield = 1000.0f;
+            health = healthMax;
+            shield = healthMax;
         }
 
         public void Update(GameTime gameTime)
@@ -86,6 +88,7 @@ namespace FinalProject
 
             timeToNextFire += time;
             weaponChangeTime -= time;
+            shieldRechargeDelay -= time;
 
             if (status == PlayerState.Respawn || status == PlayerState.WeaponFired)
                 status = PlayerState.Alive;
@@ -108,10 +111,12 @@ namespace FinalProject
                 {
                     camera.Update(gameTime);
 
+                    bool hit = false;
                     if (gameObject != null)
                     {
                         var colliders = GameObjectManager.Instance.CheckCollision(gameObject);
                         this.collider = null;
+
                         foreach (var collider in colliders)
                         {
                             switch (collider.type)
@@ -122,21 +127,30 @@ namespace FinalProject
                                     break;
                                 case "bullet":
                                 case "rocket":
+                                    hit = true;
+                                    shieldRechargeDelay = 3.0f;
                                     if (collider.owner != name)
                                     {
                                         this.collider = collider.owner;
                                         var def = Projectile.definitions[collider.type];
-                                        health -= def.damage;
                                         GameObjectManager.Instance.Delete(collider);
 
-                                        if (health <= 0.0f)
-                                        {
+                                        if (shield > 0.0f)
+                                            shield = Math.Max(0.0f, shield - def.damage);
+                                        else // damage health
+                                            health = Math.Max(0.0f, health - def.damage);
+
+                                        if(health <= 0.0f)
                                             Kill(5.0f, PlayerState.Killed);
-                                        }
                                     }
                                     break;
                             }
                         }
+                    }
+
+                    if(!hit && shieldRechargeDelay <= 0.0f)
+                    {
+                        shield += shieldRechargeRate * shieldMax * time;
                     }
 
                     Position = camera.cameraPosition;

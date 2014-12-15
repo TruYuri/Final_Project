@@ -71,7 +71,7 @@ namespace FinalProject
                     var coords = Game1.GraphicsDeviceRef.Viewport.Project(player2.Position, camera.projection, camera.view,
                         Matrix.Identity);
 
-                    if (coords.Z > 1.0f)
+                    if (coords.Z > 1.0f || !player2.alive)
                         continue;
 
                     float s = 0.5f;
@@ -80,13 +80,15 @@ namespace FinalProject
                                             new Vector2((coords.X + t.Width * s / 2) * coords.Z, (coords.Y - t.Height * s / 2) * coords.Z), Color.White);
                     spriteBatch.DrawString(font, ((player2.Position - player.Position).Length().ToString("0")) + "m",
                                             new Vector2((coords.X + t.Width * s / 2) * coords.Z, (coords.Y + t.Height * s / 2) * coords.Z), Color.White);
-                    /*
-                    var healthString = "HP: " + player.health.ToString("0.00");
-                    var shieldString = "SH: " + player.shield.ToString("0.00");
+
+                    var healthString = ("HP: " + (player2.health / player2.healthMax * 100.0f).ToString("0.00") + "%");
+                    var shieldString = ("SH: " + (player2.shield / player2.shieldMax * 100.0f).ToString("0.00") + "%");
                     var hV = font.MeasureString(healthString);
                     var sV = font.MeasureString(shieldString);
                     spriteBatch.DrawString(font, healthString,
-                                            new Vector2((coords.X - t.Width * s / 2) * coords.Z, (coords.Y - t.Height * s / 2) * coords.Z), Color.White);*/
+                                            new Vector2((coords.X - t.Width * s / 2) * coords.Z - hV.X, (coords.Y - t.Height * s / 2) * coords.Z), Color.White);
+                    spriteBatch.DrawString(font, shieldString,
+                                            new Vector2((coords.X - t.Width * s / 2) * coords.Z - sV.X, (coords.Y - t.Height * s / 2) * coords.Z + hV.Y), Color.White);
                 }
 
                 var r = textures["reticle"];
