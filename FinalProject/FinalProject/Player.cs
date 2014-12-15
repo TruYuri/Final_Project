@@ -49,6 +49,7 @@ namespace FinalProject
         {
             health = healthMax = 1000.0f;
             shield = shieldMax = 1000.0f;
+            shieldRechargeRate = 0.10f;
             name = n;
             camera = c;
             map = t;
@@ -128,7 +129,7 @@ namespace FinalProject
                                 case "bullet":
                                 case "rocket":
                                     hit = true;
-                                    shieldRechargeDelay = 3.0f;
+                                    shieldRechargeDelay = 5.0f;
                                     if (collider.owner != name)
                                     {
                                         this.collider = collider.owner;
@@ -150,7 +151,7 @@ namespace FinalProject
 
                     if(!hit && shieldRechargeDelay <= 0.0f)
                     {
-                        shield += shieldRechargeRate * shieldMax * time;
+                        shield = Math.Min(shieldMax, shield + shieldRechargeRate * shieldMax * time);
                     }
 
                     Position = camera.cameraPosition;
