@@ -72,6 +72,8 @@ namespace FinalProject
                 gameObject = new GameObject(new BasicModel(Game1.ContentManager.Load<Model>("spaceship"), new Vector3(0, 600, 0)), true, "vehicle", name);
             gameObject.world = Matrix.CreateWorld(Position, Forward, Vector3.Up);
             alive = true;
+            health = 1000.0f;
+            shield = 1000.0f;
         }
 
         public void Update(GameTime gameTime)
