@@ -32,7 +32,7 @@ namespace FinalProject
             Random rand = new Random();
             float m = (float)Math.Abs(BottomLeft.startPosition.X * 2);
             float x = -(m / 2.0f) + m * Size.X * (float)rand.NextDouble();
-            float z = -(m / 2.0f) + m * Size.Y * (float)rand.NextDouble();
+            float z = -(m / 2.0f) - m * Size.Y * (float)rand.NextDouble();
 
             return new Vector3(x, y, z);
         }
@@ -41,7 +41,7 @@ namespace FinalProject
         {
             float m = (float)Math.Abs(BottomLeft.startPosition.X * 2);
             float x = (-(m / 2.0f) + (m * Size.X)) / 2.0f;
-            float z = (-(m / 2.0f) + (m * Size.Y)) / 2.0f;
+            float z = (-(m / 2.0f) - (m * Size.Y)) / 2.0f;
 
             return new Vector3(x, y, z);
         }
@@ -106,7 +106,7 @@ namespace FinalProject
 
         public void Load(int vertexCountX, int vertexCountZ, float blockScale, float heightScale, float offsetAmount)
         {
-            var offset = new Vector3(x * offsetAmount, 0, y * offsetAmount);
+            var offset = new Vector3(x * offsetAmount, 0, -y * offsetAmount);
             effect = new BasicEffect(Game1.GraphicsDeviceRef);
             this.vertexCountX = vertexCountX;
             this.vertexCountZ = vertexCountZ;

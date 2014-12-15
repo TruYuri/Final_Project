@@ -58,7 +58,7 @@ namespace FinalProject
 
             float s = 1.0f;
             if (kState.IsKeyDown(Keys.LeftShift))
-                s = 3.0f;
+                s = 1.5f;
 
             // change throttle by an acceleration value;
             if (kState.IsKeyDown(Keys.W))

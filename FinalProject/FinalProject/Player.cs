@@ -112,7 +112,7 @@ namespace FinalProject
                 else
                 {
                     camera.Update(gameTime);
-                    AudioManager.Instance.Play("engine", name, false);
+                    //AudioManager.Instance.Play("engine", name, false);
 
                     bool hit = false;
                     if (gameObject != null)
@@ -251,7 +251,7 @@ namespace FinalProject
                 if (alive)
                 {
                     status = PlayerState.Alive;
-                    AudioManager.Instance.Play("engine", name, false);
+                    //AudioManager.Instance.Play("engine", name, false);
                 }
                 else
                 {
@@ -263,10 +263,10 @@ namespace FinalProject
         public void FireWeapon(string weapon)
         {
             weaponType = weapon;
-            var matrix = Matrix.CreateWorld(Position, Forward, Vector3.Up);
+            var m = Matrix.CreateWorld(Position, Forward, Vector3.Up);
             var def = Projectile.definitions[weaponType];
             AudioManager.Instance.Play(def.fireSound, name, false);
-            var projectile = new Projectile(Position - matrix.Up * 10, matrix.Forward, Velocity, weaponType, name);
+            var projectile = new Projectile(Position, m.Forward, Velocity, weaponType, name);
         }
 
         public void Kill(float respawn, PlayerState reason)

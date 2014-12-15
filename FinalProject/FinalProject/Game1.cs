@@ -282,7 +282,7 @@ namespace FinalProject
 
         private void InitializeLevel()
         {
-            map = new Map(new Vector2(5, 5));
+            map = new Map(new Vector2(1, 5));
             
             if(camera == null)
                 camera = new Camera(this, map);
@@ -298,36 +298,6 @@ namespace FinalProject
             Components.Add(am);
 
             #region Map
-            /*
-            Terrain x0y0 = new Terrain(@"Map\Final00", @"Map\Final00_Texture", 0, 0);
-            Terrain x0y1 = new Terrain(@"Map\Final01", @"Map\Final01_Texture", 0, 1);
-            Terrain x0y2 = new Terrain(@"Map\Final02", @"Map\Final02_Texture", 0, 2);
-            Terrain x0y3 = new Terrain(@"Map\Final03", @"Map\Final03_Texture", 0, 3);
-            Terrain x0y4 = new Terrain(@"Map\Final04", @"Map\Final04_Texture", 0, 4);
-
-            Terrain x1y0 = new Terrain(@"Map\Final10", @"Map\Final10_Texture", 1, 0);
-            Terrain x1y1 = new Terrain(@"Map\Final11", @"Map\Final11_Texture", 1, 1);
-            Terrain x1y2 = new Terrain(@"Map\Final12", @"Map\Final12_Texture", 1, 2);
-            Terrain x1y3 = new Terrain(@"Map\Final13", @"Map\Final13_Texture", 1, 3);
-            Terrain x1y4 = new Terrain(@"Map\Final14", @"Map\Final14_Texture", 1, 4);
-
-            Terrain x2y0 = new Terrain(@"Map\Final20", @"Map\Final20_Texture", 2, 0);
-            Terrain x2y1 = new Terrain(@"Map\Final21", @"Map\Final21_Texture", 2, 1);
-            Terrain x2y2 = new Terrain(@"Map\Final22", @"Map\Final22_Texture", 2, 2);
-            Terrain x2y3 = new Terrain(@"Map\Final23", @"Map\Final23_Texture", 2, 3);
-            Terrain x2y4 = new Terrain(@"Map\Final24", @"Map\Final24_Texture", 2, 4);
-
-            Terrain x3y0 = new Terrain(@"Map\Final30", @"Map\Final30_Texture", 3, 0);
-            Terrain x3y1 = new Terrain(@"Map\Final31", @"Map\Final31_Texture", 3, 1);
-            Terrain x3y2 = new Terrain(@"Map\Final32", @"Map\Final32_Texture", 3, 2);
-            Terrain x3y3 = new Terrain(@"Map\Final33", @"Map\Final33_Texture", 3, 3);
-            Terrain x3y4 = new Terrain(@"Map\Final34", @"Map\Final34_Texture", 3, 4);
-
-            Terrain x4y0 = new Terrain(@"Map\Final40", @"Map\Final40_Texture", 4, 0);
-            Terrain x4y1 = new Terrain(@"Map\Final41", @"Map\Final41_Texture", 4, 1);
-            Terrain x4y2 = new Terrain(@"Map\Final42", @"Map\Final42_Texture", 4, 2);
-            Terrain x4y3 = new Terrain(@"Map\Final43", @"Map\Final43_Texture", 4, 3);
-            Terrain x4y4 = new Terrain(@"Map\Final44", @"Map\Final44_Texture", 4, 4); */
 
             Terrain x0y0 = new Terrain(@"Map\Final00", @"Map\Final00_Texture", 0, 0);
             Terrain x0y1 = new Terrain(@"Map\Final01", @"Map\Final01_Texture", 0, 1);
