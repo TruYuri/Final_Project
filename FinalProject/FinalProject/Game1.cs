@@ -421,7 +421,8 @@ namespace FinalProject
                         packetWriter.Write(localPlayer.Position);
                         packetWriter.Write(localPlayer.Forward);
                         packetWriter.Write(localPlayer.Velocity);
-
+                        packetWriter.Write(localPlayer.health);
+                        packetWriter.Write(localPlayer.shield);
                         localGamer.SendData(packetWriter, SendDataOptions.InOrder, gamer);
 
                         switch(localPlayer.status)
@@ -476,6 +477,8 @@ namespace FinalProject
                     gamer.Position = packetReader.ReadVector3();
                     gamer.Forward = packetReader.ReadVector3();
                     gamer.Velocity = packetReader.ReadVector3();
+                    gamer.health = packetReader.ReadSingle();
+                    gamer.shield = packetReader.ReadSingle();
                 }
             }
         }

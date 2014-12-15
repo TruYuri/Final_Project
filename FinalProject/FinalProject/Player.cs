@@ -34,6 +34,8 @@ namespace FinalProject
         GameObject gameObject;
         bool localPlayer;
         float timeToNextFire;
+        float shieldRechargeRate;
+        float shieldRechargeDelay;
         BasicModel model;
         List<string> availableWeapons;
 
@@ -203,6 +205,28 @@ namespace FinalProject
                     if (gameObject != null)
                     {
                         gameObject.world = matrix;
+                    }
+
+                    // note: mostly need this to do sounds on both sides
+                    var colliders = GameObjectManager.Instance.CheckCollision(gameObject);
+                    foreach (var collider in colliders)
+                    {
+                        switch (collider.type)
+                        {
+                            case "vehicle":
+                                // play crash sound
+                                break;
+                            case "bullet":
+                            case "rocket":
+                                // play bullet hit metal sound
+                                if (collider.owner != name)
+                                {
+                                    this.collider = collider.owner;
+                                    var def = Projectile.definitions[collider.type];
+                                    GameObjectManager.Instance.Delete(collider);
+                                }
+                                break;
+                        }
                     }
                 }
 

@@ -71,15 +71,22 @@ namespace FinalProject
                     var coords = Game1.GraphicsDeviceRef.Viewport.Project(player2.Position, camera.projection, camera.view,
                         Matrix.Identity);
 
-                    if (coords.Z < 1.0f)
-                    {
-                        float s = 0.5f;
-                        spriteBatch.Draw(t, new Vector2(coords.X - t.Width * s / 2, coords.Y - t.Height * s / 2), null, Color.White, 0.0f, Vector2.Zero, coords.Z * s, SpriteEffects.None, 0);
-                        spriteBatch.DrawString(font, player2.name,
-                                               new Vector2((coords.X + t.Width * s / 2) * coords.Z, (coords.Y - t.Height * s / 2)), Color.White);
-                        spriteBatch.DrawString(font, ((player2.Position - player.Position).Length().ToString("0")) + "m",
-                                               new Vector2((coords.X + t.Width * s / 2) * coords.Z, (coords.Y + t.Height * s / 2)), Color.White);
-                    }
+                    if (coords.Z > 1.0f)
+                        continue;
+
+                    float s = 0.5f;
+                    spriteBatch.Draw(t, new Vector2(coords.X - t.Width * s / 2, coords.Y - t.Height * s / 2), null, Color.White, 0.0f, Vector2.Zero, coords.Z * s, SpriteEffects.None, 0);
+                    spriteBatch.DrawString(font, player2.name,
+                                            new Vector2((coords.X + t.Width * s / 2) * coords.Z, (coords.Y - t.Height * s / 2) * coords.Z), Color.White);
+                    spriteBatch.DrawString(font, ((player2.Position - player.Position).Length().ToString("0")) + "m",
+                                            new Vector2((coords.X + t.Width * s / 2) * coords.Z, (coords.Y + t.Height * s / 2) * coords.Z), Color.White);
+                    /*
+                    var healthString = "HP: " + player.health.ToString("0.00");
+                    var shieldString = "SH: " + player.shield.ToString("0.00");
+                    var hV = font.MeasureString(healthString);
+                    var sV = font.MeasureString(shieldString);
+                    spriteBatch.DrawString(font, healthString,
+                                            new Vector2((coords.X - t.Width * s / 2) * coords.Z, (coords.Y - t.Height * s / 2) * coords.Z), Color.White);*/
                 }
 
                 var r = textures["reticle"];
