@@ -298,35 +298,35 @@ namespace FinalProject
             Components.Add(am);
 
             #region Map
-            Terrain x0y0 = new Terrain("image", "Map_c", 0, 0);
-            Terrain x0y1 = new Terrain("image", "Map_c", 0, 1);
-            Terrain x0y2 = new Terrain("image", "Map_c", 0, 2);
-            Terrain x0y3 = new Terrain("image", "Map_c", 0, 3);
-            Terrain x0y4 = new Terrain("image", "Map_c", 0, 4);
+            Terrain x0y0 = new Terrain("Final00", "Final00_Texture", 0, 0);
+            Terrain x0y1 = new Terrain("Final01", "Final01_Texture", 0, 1);
+            Terrain x0y2 = new Terrain("Final02", "Final02_Texture", 0, 2);
+            Terrain x0y3 = new Terrain("Final03", "Final03_Texture", 0, 3);
+            Terrain x0y4 = new Terrain("Final04", "Final04_Texture", 0, 4);
 
-            Terrain x1y0 = new Terrain("image", "Map_c", 1, 0);
-            Terrain x1y1 = new Terrain("image", "Map_c", 1, 1);
-            Terrain x1y2 = new Terrain("image", "Map_c", 1, 2);
-            Terrain x1y3 = new Terrain("image", "Map_c", 1, 3);
-            Terrain x1y4 = new Terrain("image", "Map_c", 1, 4);
+            Terrain x1y0 = new Terrain("Final10", "Final10_Texture", 1, 0);
+            Terrain x1y1 = new Terrain("Final11", "Final11_Texture", 1, 1);
+            Terrain x1y2 = new Terrain("Final12", "Final12_Texture", 1, 2);
+            Terrain x1y3 = new Terrain("Final13", "Final13_Texture", 1, 3);
+            Terrain x1y4 = new Terrain("Final14", "Final14_Texture", 1, 4);
 
-            Terrain x2y0 = new Terrain("image", "Map_c", 2, 0);
-            Terrain x2y1 = new Terrain("image", "Map_c", 2, 1);
-            Terrain x2y2 = new Terrain("image", "Map_c", 2, 2);
-            Terrain x2y3 = new Terrain("image", "Map_c", 2, 3);
-            Terrain x2y4 = new Terrain("image", "Map_c", 2, 4);
+            Terrain x2y0 = new Terrain("Final20", "Final20_Texture", 2, 0);
+            Terrain x2y1 = new Terrain("Final21", "Final21_Texture", 2, 1);
+            Terrain x2y2 = new Terrain("Final22", "Final22_Texture", 2, 2);
+            Terrain x2y3 = new Terrain("Final23", "Final23_Texture", 2, 3);
+            Terrain x2y4 = new Terrain("Final24", "Final24_Texture", 2, 4);
 
-            Terrain x3y0 = new Terrain("image", "Map_c", 3, 0);
-            Terrain x3y1 = new Terrain("image", "Map_c", 3, 1);
-            Terrain x3y2 = new Terrain("image", "Map_c", 3, 2);
-            Terrain x3y3 = new Terrain("image", "Map_c", 3, 3);
-            Terrain x3y4 = new Terrain("image", "Map_c", 3, 4);
+            Terrain x3y0 = new Terrain("Final30", "Final30_Texture", 3, 0);
+            Terrain x3y1 = new Terrain("Final31", "Final31_Texture", 3, 1);
+            Terrain x3y2 = new Terrain("Final32", "Final32_Texture", 3, 2);
+            Terrain x3y3 = new Terrain("Final33", "Final33_Texture", 3, 3);
+            Terrain x3y4 = new Terrain("Final34", "Final34_Texture", 3, 4);
 
-            Terrain x4y0 = new Terrain("image", "Map_c", 4, 0);
-            Terrain x4y1 = new Terrain("image", "Map_c", 4, 1);
-            Terrain x4y2 = new Terrain("image", "Map_c", 4, 2);
-            Terrain x4y3 = new Terrain("image", "Map_c", 4, 3);
-            Terrain x4y4 = new Terrain("image", "Map_c", 4, 4);
+            Terrain x4y0 = new Terrain("Final40", "Final40_Texture", 4, 0);
+            Terrain x4y1 = new Terrain("Final41", "Final41_Texture", 4, 1);
+            Terrain x4y2 = new Terrain("Final42", "Final42_Texture", 4, 2);
+            Terrain x4y3 = new Terrain("Final43", "Final43_Texture", 4, 3);
+            Terrain x4y4 = new Terrain("Final44", "Final44_Texture", 4, 4);
 
             map.terrainPieces.Add(x0y0);
             map.terrainPieces.Add(x0y1);

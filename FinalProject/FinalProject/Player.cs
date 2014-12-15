@@ -206,6 +206,8 @@ namespace FinalProject
                             var projectile = new Projectile(Position, Forward, Velocity, weaponType, name);
                             status = PlayerState.WeaponFired;
                         }
+
+                        prevMouseWheel = mState.ScrollWheelValue;
                     }
 
                     if (gameObject != null)

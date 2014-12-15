@@ -113,7 +113,7 @@ namespace FinalProject
             this.blockScale = blockScale;
             this.heightScale = heightScale;
 
-            FileStream filestream = File.OpenRead(Game1.ContentManager.RootDirectory + "/" + heightMap + ".raw");
+            FileStream filestream = File.OpenRead(Game1.ContentManager.RootDirectory + "/" + heightMap);
 
             int heightmapSize = vertexCountX * vertexCountZ;
             this.heightmap = new byte[heightmapSize];

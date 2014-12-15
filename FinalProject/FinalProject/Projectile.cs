@@ -40,14 +40,15 @@ namespace FinalProject
     {
         public static Dictionary<string, ProjectileDefinition> definitions = new Dictionary<string, ProjectileDefinition>()
         {
-            { "bullet", new ProjectileDefinition("bullet", "spaceship", 0.5f, -5000.0f, 500.0f, 1.0f, ProjectileType.Model) },
-            { "rocket", new ProjectileDefinition("rocket", "spaceship", 20.0f, -50.0f, 500.0f, 0.1f, ProjectileType.Model) }
+            { "bullet", new ProjectileDefinition("bullet", "", 0.5f, -5000.0f, 500.0f, 0.1f, ProjectileType.Line) },
+            { "rocket", new ProjectileDefinition("rocket", "spaceship", -50.0f, 50.0f, 500.0f, 1.0f, ProjectileType.Model) }
         };
 
         Vector3 dir;
         Vector3 baseVelocity;
         float lifeTime;
-        VertexBuffer buffer;
+        public static VertexBuffer buffer = new VertexBuffer(Game1.GraphicsDeviceRef, typeof(VertexPositionColor), 2, BufferUsage.None);
+        public static VertexPositionColor[] vertices = { new VertexPositionColor(Vector3.Zero, Color.White), new VertexPositionColor(new Vector3(0.0f, 0.0f, -100.0f), Color.Gold) };
 
         public Projectile(Vector3 pos, Vector3 d, Vector3 baseVel, string name, string owner)
             : base(definitions[name].modelName == "" ? null : new BasicModel(Game1.ContentManager.Load<Model>(definitions[name].modelName), Vector3.Zero), true, name, owner)
@@ -56,15 +57,6 @@ namespace FinalProject
             dir = d;
             baseVelocity = baseVel;
             world = Matrix.CreateWorld(pos, d, Vector3.Up);
-
-            buffer = new VertexBuffer(Game1.GraphicsDeviceRef, typeof(VertexPositionColor), 2, BufferUsage.None);
-
-            var vertices = new VertexPositionColor[2];
-            vertices[0].Position = Vector3.Zero;
-            vertices[0].Color = Color.Gold;
-            vertices[1].Position = new Vector3(0.0f, 0.0f, -100.0f);
-            vertices[1].Color = Color.Gold;
-            buffer.SetData<VertexPositionColor>(vertices);
         }
 
         public override void Update(GameTime gameTime)
