@@ -204,8 +204,12 @@ namespace FinalProject
                 case PlayerState.CrashedVehicle:
                     name = packetReader.ReadString();
                     name2 = packetReader.ReadString();
-                    FindAndKill(name, PlayerState.CrashedVehicle);
-                    FindAndKill(name2, PlayerState.CrashedVehicle);
+                    Player a = FindPlayer(name);
+                    Player b = FindPlayer(name2);
+                    a.collider = name2;
+                    b.collider = name;
+                    a.Kill(5.0f, PlayerState.CrashedVehicle);
+                    b.Kill(5.0f, PlayerState.CrashedVehicle);
                     break;
                 case PlayerState.CrashedGround:
                     name = packetReader.ReadString();
@@ -218,19 +222,25 @@ namespace FinalProject
             }
         }
 
-        private void FindAndKill(string name, PlayerState reason)
+        private Player FindPlayer(string name)
         {
             if (name == localPlayer.name)
-                localPlayer.Kill(5.0f, reason);
-
+                return localPlayer;
             foreach (var player in players)
             {
                 if (player.name == name)
                 {
-                    player.Kill(5.0f, reason);
-                    break;
+                    return player;
                 }
             }
+
+            return null;
+        }
+
+        private void FindAndKill(string name, PlayerState reason)
+        {
+            Player player = FindPlayer(name);
+            player.Kill(5.0f, reason);
         }
 
         protected void WeaponFired()
@@ -391,6 +401,7 @@ namespace FinalProject
             // Call the local's Update method, which will process user input
             // for movement and update the animation frame
             //Boolean used to inform the Update function that the local player is calling update,          //therefore update based on local input
+            var old = localPlayer.status;
             localPlayer.Update(gameTime);
 
             if(localPlayer.status == PlayerState.CrashedVehicle)
@@ -431,7 +442,7 @@ namespace FinalProject
                                 break;
                         }
                     }
-                    else
+                    else if(old != localPlayer.status) // fresh kill
                     {
                         packetWriter.Write((int)MessageType.Kill);
                         packetWriter.Write((int)localPlayer.status);

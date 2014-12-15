@@ -202,7 +202,6 @@ namespace FinalProject
                     }
 
                     var colliders = GameObjectManager.Instance.CheckCollision(gameObject);
-                    this.collider = null;
                     foreach (var collider in colliders)
                     {
                         switch (collider.type)
