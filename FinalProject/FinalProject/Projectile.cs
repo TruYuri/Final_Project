@@ -40,7 +40,7 @@ namespace FinalProject
     {
         public static Dictionary<string, ProjectileDefinition> definitions = new Dictionary<string, ProjectileDefinition>()
         {
-            { "bullet", new ProjectileDefinition("bullet", "", 0.5f, -5000.0f, 500.0f, 1.0f, ProjectileType.Line) },
+            { "bullet", new ProjectileDefinition("bullet", "spaceship", 0.5f, -5000.0f, 500.0f, 1.0f, ProjectileType.Model) },
             { "rocket", new ProjectileDefinition("rocket", "spaceship", 20.0f, -50.0f, 500.0f, 0.1f, ProjectileType.Model) }
         };
 
