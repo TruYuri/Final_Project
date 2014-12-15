@@ -201,39 +201,6 @@ namespace FinalProject
                     {
                         gameObject.world = matrix;
                     }
-
-                    var colliders = GameObjectManager.Instance.CheckCollision(gameObject);
-                    foreach (var collider in colliders)
-                    {
-                        switch (collider.type)
-                        {
-                            case "vehicle":
-                                this.collider = collider.owner;
-                                Kill(5.0f, PlayerState.CrashedVehicle);
-                                break;
-                            case "projectile":
-                                if (collider.owner != name)
-                                {
-                                    var def = Projectile.definitions[collider.type];
-                                    health -= def.damage;
-                                    GameObjectManager.Instance.Delete(collider);
-
-                                    if (health <= 0.0f)
-                                    {
-                                        Kill(5.0f, PlayerState.Killed);
-                                    }
-                                }
-                                break;
-                        }
-                    }
-
-                    switch (status)
-                    {
-                        case PlayerState.WeaponFired:
-                            var def = Projectile.definitions[weaponType];
-                            var projectile = new Projectile(Position, matrix.Forward, Velocity, weaponType, name);
-                            break;
-                    }
                 }
 
                 if (alive)
@@ -241,6 +208,14 @@ namespace FinalProject
                 else
                     status = PlayerState.Killed;
             }
+        }
+
+        public void FireWeapon(string weapon)
+        {
+            weaponType = weapon;
+            var matrix = Matrix.CreateWorld(Position, Forward, Vector3.Up);
+            var def = Projectile.definitions[weaponType];
+            var projectile = new Projectile(Position, matrix.Forward, Velocity, weaponType, name);
         }
 
         public void Kill(float respawn, PlayerState reason)

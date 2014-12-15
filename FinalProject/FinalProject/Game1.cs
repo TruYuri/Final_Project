@@ -251,8 +251,7 @@ namespace FinalProject
             {
                 if (player.name == name)
                 {
-                    player.weaponType = weapon;
-                    player.status = PlayerState.WeaponFired;
+                    player.FireWeapon(weapon);
                     break;
                 }
             }
