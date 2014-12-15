@@ -20,7 +20,7 @@ namespace FinalProject
         public string collider;
         public string weaponType;
         public float health;
-        public int shield;
+        public float  shield;
         public bool alive;
         public string name;
         public Vector3 Position;
@@ -44,6 +44,7 @@ namespace FinalProject
         public Player(Game game, Camera c, Map t, bool local, string n)
         {
             health = 1000.0f;
+            shield = 1000.0f;
             name = n;
             camera = c;
             map = t;
@@ -82,11 +83,12 @@ namespace FinalProject
             timeToNextFire += time;
             weaponChangeTime -= time;
 
+            if (status == PlayerState.Respawn)
+                status = PlayerState.Alive;
+
             if (localPlayer)
             {
-                if (alive)
-                    status = PlayerState.Alive;
-                else
+                if (!alive)
                 {
                     respawnTimer -= time;
                     if(respawnTimer <= 0.0f)
@@ -96,11 +98,9 @@ namespace FinalProject
                         camera.PlaceCamera(map.CreateRandomSpawnAtHeight(600), c - pos, Vector3.Up);
                         Initialize();
                         status = PlayerState.Respawn;
-                        return;
                     }
                 }
-
-                if (alive)
+                else
                 {
                     camera.Update(gameTime);
 
@@ -115,19 +115,18 @@ namespace FinalProject
                                 case "vehicle":
                                     status = PlayerState.CrashedVehicle;
                                     this.collider = collider.owner;
-                                    alive = false;
+                                    Kill(5.0f);
                                     break;
                                 case "projectile":
                                     if (collider.owner != name)
                                     {
                                         var def = Projectile.definitions[collider.type];
                                         health -= def.damage;
-                                        health = Math.Max(health, 0.0f);
                                         GameObjectManager.Instance.Delete(collider);
 
                                         if (health <= 0.0f)
                                         {
-                                            alive = false;
+                                            Kill(5.0f);
                                             status = PlayerState.Died;
                                         }
                                     }
@@ -158,7 +157,7 @@ namespace FinalProject
                     {
                         status = PlayerState.CrashedGround;
                         this.collider = "the ground";
-                        alive = false;
+                        Kill(5.0f);
                     }
 
                     if (alive)
@@ -191,17 +190,8 @@ namespace FinalProject
                         }
                     }
 
-                    if(!alive)
-                    {
-                        respawnTimer = 5.0f;
-                    }
-
                     if (gameObject != null)
                         gameObject.world = Matrix.CreateWorld(Position, Forward, Vector3.Up);
-                }
-                else
-                {
-                    Delete();
                 }
             }
             else
@@ -252,7 +242,16 @@ namespace FinalProject
             }
         }
 
-        public void Delete()
+        public void Kill(float respawn)
+        {
+            respawnTimer = respawn;
+            Delete();
+            alive = false;
+            health = 0.0f;
+            shield = 0.0f;
+        }
+
+        private void Delete()
         {
             GameObjectManager.Instance.Delete(gameObject);
             gameObject = null;

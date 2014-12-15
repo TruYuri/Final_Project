@@ -201,16 +201,13 @@ namespace FinalProject
 
             switch (killType)
             {
-                case PlayerState.CrashedGround:
-                    name = packetReader.ReadString();
-                    FindAndKill(name);
-                    break;
                 case PlayerState.CrashedVehicle:
                     name = packetReader.ReadString();
                     name2 = packetReader.ReadString();
                     FindAndKill(name);
                     FindAndKill(name2);
                     break;
+                case PlayerState.CrashedGround:
                 case PlayerState.Died:
                     name = packetReader.ReadString();
                     FindAndKill(name);
@@ -221,19 +218,13 @@ namespace FinalProject
         private void FindAndKill(string name)
         {
             if(name == localPlayer.name)
-            {
-                localPlayer.Delete();
-                localPlayer.alive = false;
-                localPlayer.health = 0;
-            }
+                localPlayer.Kill(5.0f);
 
             foreach (var player in players)
             {
                 if (player.name == name)
                 {
-                    player.Delete();
-                    player.alive = false;
-                    player.health = 0;
+                    player.Kill(5.0f);
                     break;
                 }
             }
@@ -517,7 +508,7 @@ namespace FinalProject
                 if (e.Gamer.Gamertag == pl.name)
                 {
                     player = pl;
-                    pl.Delete();
+                    pl.Kill(0.0f);
                     break;
                 }
             }
