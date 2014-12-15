@@ -13,7 +13,7 @@ using Microsoft.Xna.Framework.Net;
 
 namespace FinalProject
 {
-    public enum PlayerState { Alive, WeaponFired, CrashedGround, CrashedVehicle, TookDamage, Died, Respawn }
+    public enum PlayerState { Alive, WeaponFired, CrashedGround, CrashedVehicle, TookDamage, Killed, Respawn, Left }
     class Player
     {
         public PlayerState status;
@@ -113,9 +113,8 @@ namespace FinalProject
                             switch (collider.type)
                             {
                                 case "vehicle":
-                                    status = PlayerState.CrashedVehicle;
                                     this.collider = collider.owner;
-                                    Kill(5.0f);
+                                    Kill(5.0f, PlayerState.CrashedVehicle);
                                     break;
                                 case "projectile":
                                     if (collider.owner != name)
@@ -126,8 +125,7 @@ namespace FinalProject
 
                                         if (health <= 0.0f)
                                         {
-                                            Kill(5.0f);
-                                            status = PlayerState.Died;
+                                            Kill(5.0f, PlayerState.Killed);
                                         }
                                     }
                                     break;
@@ -155,9 +153,8 @@ namespace FinalProject
                     }
                     else if (height - 25.0 < 0.0f)
                     {
-                        status = PlayerState.CrashedGround;
                         this.collider = "the ground";
-                        Kill(5.0f);
+                        Kill(5.0f, PlayerState.CrashedGround);
                     }
 
                     if (alive)
@@ -211,9 +208,8 @@ namespace FinalProject
                         switch (collider.type)
                         {
                             case "vehicle":
-                                status = PlayerState.CrashedVehicle;
                                 this.collider = collider.owner;
-                                alive = false;
+                                Kill(5.0f, PlayerState.CrashedVehicle);
                                 break;
                             case "projectile":
                                 if (collider.owner != name)
@@ -221,6 +217,11 @@ namespace FinalProject
                                     var def = Projectile.definitions[collider.type];
                                     health -= def.damage;
                                     GameObjectManager.Instance.Delete(collider);
+
+                                    if (health <= 0.0f)
+                                    {
+                                        Kill(5.0f, PlayerState.Killed);
+                                    }
                                 }
                                 break;
                         }
@@ -238,12 +239,16 @@ namespace FinalProject
                 if (alive)
                     status = PlayerState.Alive;
                 else
-                    status = PlayerState.Died;
+                    status = PlayerState.Killed;
             }
         }
 
-        public void Kill(float respawn)
+        public void Kill(float respawn, PlayerState reason)
         {
+            if (!alive)
+                return;
+
+            status = reason;
             respawnTimer = respawn;
             Delete();
             alive = false;

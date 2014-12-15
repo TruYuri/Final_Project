@@ -204,27 +204,30 @@ namespace FinalProject
                 case PlayerState.CrashedVehicle:
                     name = packetReader.ReadString();
                     name2 = packetReader.ReadString();
-                    FindAndKill(name);
-                    FindAndKill(name2);
+                    FindAndKill(name, PlayerState.CrashedVehicle);
+                    FindAndKill(name2, PlayerState.CrashedVehicle);
                     break;
                 case PlayerState.CrashedGround:
-                case PlayerState.Died:
                     name = packetReader.ReadString();
-                    FindAndKill(name);
+                    FindAndKill(name, PlayerState.CrashedGround);
+                    break;
+                case PlayerState.Killed:
+                    name = packetReader.ReadString();
+                    FindAndKill(name, PlayerState.Killed);
                     break;
             }
         }
 
-        private void FindAndKill(string name)
+        private void FindAndKill(string name, PlayerState reason)
         {
-            if(name == localPlayer.name)
-                localPlayer.Kill(5.0f);
+            if (name == localPlayer.name)
+                localPlayer.Kill(5.0f, reason);
 
             foreach (var player in players)
             {
                 if (player.name == name)
                 {
-                    player.Kill(5.0f);
+                    player.Kill(5.0f, reason);
                     break;
                 }
             }
@@ -392,7 +395,7 @@ namespace FinalProject
 
             if(localPlayer.status == PlayerState.CrashedVehicle)
             {
-                FindAndKill(localPlayer.collider);
+                FindAndKill(localPlayer.collider, PlayerState.CrashedVehicle);
             }
 
             // Send data to other player
@@ -441,7 +444,7 @@ namespace FinalProject
                                 packetWriter.Write(localPlayer.collider);
                                 packetWriter.Write(localPlayer.name);
                                 break;
-                            case PlayerState.Died:
+                            case PlayerState.Killed:
                                 packetWriter.Write(localPlayer.name);
                                 break;
                         }
@@ -508,7 +511,7 @@ namespace FinalProject
                 if (e.Gamer.Gamertag == pl.name)
                 {
                     player = pl;
-                    pl.Kill(0.0f);
+                    pl.Kill(0.0f, PlayerState.Left);
                     break;
                 }
             }
