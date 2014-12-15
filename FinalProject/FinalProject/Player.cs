@@ -13,7 +13,7 @@ using Microsoft.Xna.Framework.Net;
 
 namespace FinalProject
 {
-    public enum PlayerState { Alive, WeaponFired, CrashedGround, CrashedVehicle, TookDamage, Killed, Respawn, Left }
+    public enum PlayerState { Alive, WeaponFired, CrashedGround, CrashedVehicle, Killed, Respawn, Left }
     class Player
     {
         public PlayerState status;
@@ -83,7 +83,7 @@ namespace FinalProject
             timeToNextFire += time;
             weaponChangeTime -= time;
 
-            if (status == PlayerState.Respawn)
+            if (status == PlayerState.Respawn || status == PlayerState.WeaponFired)
                 status = PlayerState.Alive;
 
             if (localPlayer)
@@ -119,6 +119,7 @@ namespace FinalProject
                                 case "projectile":
                                     if (collider.owner != name)
                                     {
+                                        this.collider = collider.owner;
                                         var def = Projectile.definitions[collider.type];
                                         health -= def.damage;
                                         GameObjectManager.Instance.Delete(collider);

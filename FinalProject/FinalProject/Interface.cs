@@ -61,7 +61,8 @@ namespace FinalProject
 
             var players = (List<Player>)other["players"];
             var camera = (Camera)other["camera"];
-
+            
+            Vector2 pos;
             if (player.status == PlayerState.Alive)
             {
                 var t = textures["target"];
@@ -86,18 +87,20 @@ namespace FinalProject
             }
             else if(player.status == PlayerState.CrashedGround)
             {
-                Vector2 pos;
-
                 pos = new Vector2(Game1.xRes / 2, Game1.yRes / 2) - font.MeasureString("Crashed!") / 2;
                 spriteBatch.DrawString(font, "Crashed!", new Vector2(pos.X, Game1.yRes / 3), Color.White);
                 Respawn(spriteBatch, font, player);
             }
             else if (player.status == PlayerState.CrashedVehicle)
             {
-                Vector2 pos;
-
                 pos = new Vector2(Game1.xRes / 2, Game1.yRes / 2) - font.MeasureString("Crashed into " + player.collider) / 2;
                 spriteBatch.DrawString(font, "Crashed into " + player.collider, new Vector2(pos.X, Game1.yRes / 3), Color.White);
+                Respawn(spriteBatch, font, player);
+            }
+            else if(player.status == PlayerState.Killed)
+            {
+                pos = new Vector2(Game1.xRes / 2, Game1.yRes / 2) - font.MeasureString("Killed by " + player.collider) / 2;
+                spriteBatch.DrawString(font, "Killed by " + player.collider, new Vector2(pos.X, Game1.yRes / 3), Color.White);
                 Respawn(spriteBatch, font, player);
             }
         }

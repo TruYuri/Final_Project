@@ -427,8 +427,6 @@ namespace FinalProject
 
                         switch(localPlayer.status)
                         {
-                            case PlayerState.TookDamage:
-                                break;
                             case PlayerState.WeaponFired:
                                 packetWriter.Write((int)MessageType.WeaponFired);
                                 packetWriter.Write(localPlayer.name);
