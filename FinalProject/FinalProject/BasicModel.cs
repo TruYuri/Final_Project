@@ -53,6 +53,7 @@ namespace FinalProject
                 foreach (BasicEffect be in mesh.Effects)
                 {
                     //Set BasicEffect information
+                    be.TextureEnabled = false;
                     be.EnableDefaultLighting();
                     be.Projection = camera.projection;
                     be.View = camera.view;

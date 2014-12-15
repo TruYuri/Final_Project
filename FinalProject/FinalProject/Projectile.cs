@@ -13,26 +13,27 @@ using Microsoft.Xna.Framework.Net;
 
 namespace FinalProject
 {
-    public enum ProjectileType { Model, Line, None };
     struct ProjectileDefinition
     {
         public string name;
         public string modelName;
+        public string fireSound;
+        public string hitSound;
         public float timeToLive;
         public float speed;
         public float damage;
         public float fireTime;
-        public ProjectileType type;
 
-        public ProjectileDefinition(string n, string m, float t, float s, float d, float f, ProjectileType p)
+        public ProjectileDefinition(string n, string m, string fS, string hS, float t, float s, float d, float f)
         {
             name = n;
             modelName = m;
+            fireSound = fS;
+            hitSound = hS;
             timeToLive = t;
             speed = s;
             damage = d;
             fireTime = f;
-            type = p;
         }
     }
 
@@ -40,18 +41,16 @@ namespace FinalProject
     {
         public static Dictionary<string, ProjectileDefinition> definitions = new Dictionary<string, ProjectileDefinition>()
         {
-            { "bullet", new ProjectileDefinition("bullet", "", 0.5f, -5000.0f, 500.0f, 0.1f, ProjectileType.Line) },
-            { "rocket", new ProjectileDefinition("rocket", "spaceship", -50.0f, 50.0f, 500.0f, 1.0f, ProjectileType.Model) }
+            { "bullet", new ProjectileDefinition("bullet", "bullet", "machinegun", "bullet", 1.0f, -1000.0f, 50.0f, 0.1f) },
+            { "rocket", new ProjectileDefinition("rocket", "spaceship", "missile", "explode2", 50.0f, -50.0f, 500.0f, 1.0f) }
         };
 
         Vector3 dir;
         Vector3 baseVelocity;
         float lifeTime;
-        public static VertexBuffer buffer = new VertexBuffer(Game1.GraphicsDeviceRef, typeof(VertexPositionColor), 2, BufferUsage.None);
-        public static VertexPositionColor[] vertices = { new VertexPositionColor(Vector3.Zero, Color.White), new VertexPositionColor(new Vector3(0.0f, 0.0f, -100.0f), Color.Gold) };
 
         public Projectile(Vector3 pos, Vector3 d, Vector3 baseVel, string name, string owner)
-            : base(definitions[name].modelName == "" ? null : new BasicModel(Game1.ContentManager.Load<Model>(definitions[name].modelName), Vector3.Zero), true, name, owner)
+            : base(new BasicModel(Game1.ContentManager.Load<Model>(definitions[name].modelName), Vector3.Zero), true, name, owner)
         {
             lifeTime = 0.0f;
             dir = d;
@@ -71,28 +70,14 @@ namespace FinalProject
 
             var pos = world.Translation;
             pos += baseVelocity + dir * (float)gameTime.ElapsedGameTime.TotalSeconds * def.speed;
-            world = Matrix.CreateWorld(pos, dir, Vector3.Up);
+            world = (type == "bullet" ? Matrix.CreateRotationY(-MathHelper.PiOver2) : Matrix.Identity ) * Matrix.CreateWorld(pos, dir, Vector3.Up);
 
             base.Update(gameTime);
         }
 
         public override void Draw(Camera c)
         {
-            var def = Projectile.definitions[type];
-            if(def.type == ProjectileType.Model)
-                base.Draw(c);
-            else if(def.type == ProjectileType.Line)
-            {
-                var basicEffect = new BasicEffect(Game1.GraphicsDeviceRef);
-                basicEffect.VertexColorEnabled = true;
-                basicEffect.Projection = c.projection;
-                basicEffect.View = c.view;
-                basicEffect.World = world;
-                basicEffect.TextureEnabled = false;
-                basicEffect.CurrentTechnique.Passes[0].Apply();
-                Game1.GraphicsDeviceRef.SetVertexBuffer(buffer);
-                Game1.GraphicsDeviceRef.DrawIndexedPrimitives(PrimitiveType.LineList, 0, 0, 2, 0, 1);
-            }
+            base.Draw(c);
         }
     }
 }

@@ -62,6 +62,7 @@ namespace FinalProject
             availableWeapons = new List<string>() { "bullet", "rocket" };
             weaponChangeTime = 0.0f;
             prevMouseWheel = Mouse.GetState().ScrollWheelValue;
+            AudioManager.Instance.AddPlayer(name);
         }
 
         public void Initialize()
@@ -111,6 +112,7 @@ namespace FinalProject
                 else
                 {
                     camera.Update(gameTime);
+                    AudioManager.Instance.Play("engine", name, false);
 
                     bool hit = false;
                     if (gameObject != null)
@@ -135,7 +137,7 @@ namespace FinalProject
                                         this.collider = collider.owner;
                                         var def = Projectile.definitions[collider.type];
                                         GameObjectManager.Instance.Delete(collider);
-
+                                        AudioManager.Instance.Play(def.hitSound, name, true);
                                         if (shield > 0.0f)
                                             shield = Math.Max(0.0f, shield - def.damage);
                                         else // damage health
@@ -202,9 +204,7 @@ namespace FinalProject
                         if ((mState.LeftButton == ButtonState.Pressed || kState.IsKeyDown(Keys.Space)) && def.fireTime - timeToNextFire <= 0.0f)
                         {
                             timeToNextFire = 0.0f;
-                            var transpose = Matrix.Transpose(camera.view);
-                            var projectile = new Projectile(Position, Forward, Velocity, weaponType, name);
-                            status = PlayerState.WeaponFired;
+                            FireWeapon(availableWeapons[weaponIndex]);
                         }
 
                         prevMouseWheel = mState.ScrollWheelValue;
@@ -240,6 +240,7 @@ namespace FinalProject
                                 {
                                     this.collider = collider.owner;
                                     var def = Projectile.definitions[collider.type];
+                                    AudioManager.Instance.Play(def.hitSound, name, true);
                                     GameObjectManager.Instance.Delete(collider);
                                 }
                                 break;
@@ -248,9 +249,14 @@ namespace FinalProject
                 }
 
                 if (alive)
+                {
                     status = PlayerState.Alive;
+                    AudioManager.Instance.Play("engine", name, false);
+                }
                 else
+                {
                     status = PlayerState.Killed;
+                }
             }
         }
 
@@ -259,7 +265,8 @@ namespace FinalProject
             weaponType = weapon;
             var matrix = Matrix.CreateWorld(Position, Forward, Vector3.Up);
             var def = Projectile.definitions[weaponType];
-            var projectile = new Projectile(Position, matrix.Forward, Velocity, weaponType, name);
+            AudioManager.Instance.Play(def.fireSound, name, false);
+            var projectile = new Projectile(Position - matrix.Up * 10, matrix.Forward, Velocity, weaponType, name);
         }
 
         public void Kill(float respawn, PlayerState reason)
@@ -273,6 +280,8 @@ namespace FinalProject
             alive = false;
             health = 0.0f;
             shield = 0.0f;
+            AudioManager.Instance.Play("explode", name, true);
+            AudioManager.Instance.Pause("engine", name);
         }
 
         private void Delete()

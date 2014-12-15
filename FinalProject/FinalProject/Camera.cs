@@ -26,8 +26,6 @@ namespace FinalProject
         MouseState prevMouseState;
         int screenCenterX;
         int screenCenterY;
-        int prevMouseX;
-        int prevMouseY;
         Map map;
         float throttle;
         float throttleRate;

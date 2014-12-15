@@ -21,7 +21,7 @@ namespace FinalProject
         private AudioEngine m_audioEngine;
         private WaveBank m_waveBank;
         private SoundBank m_soundBank;
-        private Dictionary<string, Cue> m_audioQueue;
+        private Dictionary<string, Dictionary<string, Cue>> m_audioQueue;
 
         public static AudioManager Instance
         {
@@ -33,10 +33,10 @@ namespace FinalProject
         public AudioManager(Game game) : base(game)
         {
             m_audioEngine = new AudioEngine("Content\\FinalProjectAudio.xgs");
-            //m_waveBank = new WaveBank(m_audioEngine, "Content\\Wave Bank.xwb");
-           // m_soundBank = new SoundBank(m_audioEngine, "Content\\Sound Bank.xsb");
-
-            m_audioQueue = new Dictionary<string, Cue>();
+            m_waveBank = new WaveBank(m_audioEngine, "Content\\Wave Bank.xwb");
+            m_soundBank = new SoundBank(m_audioEngine, "Content\\Sound Bank.xsb");
+            m_instance = this;
+            m_audioQueue = new Dictionary<string, Dictionary<string, Cue>>();
             MediaPlayer.IsRepeating = true;
         }
 
@@ -45,13 +45,17 @@ namespace FinalProject
             m_audioEngine.Update();
         }
 
-        public void Play(string name)
+        public void Play(string name, string player, bool ignore)
         {
             // check if the audio is already in the queue
-            if (m_audioQueue.ContainsKey(name))
+            var queue = m_audioQueue[player];
+            if (queue.ContainsKey(name))
             {
                 // if it is, check the various conditions it might be experiencing and act appropriately
-                var cue = m_audioQueue[name];
+                var cue = queue[name];
+                if (cue.IsPlaying)
+                    return;
+
                 if (cue.IsDisposed || cue.IsStopped || cue.IsStopping)
                     cue = m_soundBank.GetCue(name);
                 if (cue.IsPaused)
@@ -62,16 +66,21 @@ namespace FinalProject
             else
             {
                 // otherwise, start a new instance
-                m_audioQueue.Add(name, m_soundBank.GetCue(name));
-                m_audioQueue[name].Play();
+                queue.Add(name, m_soundBank.GetCue(name));
+                queue[name].Play();
             }
         }
 
-        public void Pause(string name)
+        public void AddPlayer(string name)
         {
-            if (m_audioQueue.ContainsKey(name))
+            m_audioQueue.Add(name, new Dictionary<string, Cue>());
+        }
+
+        public void Pause(string name, string player)
+        {
+            if (m_audioQueue[player].ContainsKey(name))
             {
-                var cue = m_audioQueue[name];
+                var cue = m_audioQueue[player][name];
                 if (!cue.IsDisposed && !cue.IsStopped && !cue.IsStopping)
                     cue.Pause();
             }
@@ -87,9 +96,9 @@ namespace FinalProject
             MediaPlayer.Stop();
         }
 
-        public void Clear()
+        public void Clear(string player)
         {
-            foreach (var audio in m_audioQueue)
+            foreach (var audio in m_audioQueue[player])
                 if(!audio.Value.IsDisposed)
                     audio.Value.Stop(AudioStopOptions.Immediate);
             m_audioQueue.Clear();
