@@ -116,7 +116,8 @@ namespace FinalProject
                                     this.collider = collider.owner;
                                     Kill(5.0f, PlayerState.CrashedVehicle);
                                     break;
-                                case "projectile":
+                                case "bullet":
+                                case "rocket":
                                     if (collider.owner != name)
                                     {
                                         this.collider = collider.owner;
