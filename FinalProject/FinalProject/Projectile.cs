@@ -23,8 +23,9 @@ namespace FinalProject
         public float speed;
         public float damage;
         public float fireTime;
+        public float spray;
 
-        public ProjectileDefinition(string n, string m, string fS, string hS, float t, float s, float d, float f)
+        public ProjectileDefinition(string n, string m, string fS, string hS, float t, float s, float d, float f, float sp)
         {
             name = n;
             modelName = m;
@@ -34,6 +35,7 @@ namespace FinalProject
             speed = s;
             damage = d;
             fireTime = f;
+            spray = sp;
         }
     }
 
@@ -41,8 +43,8 @@ namespace FinalProject
     {
         public static Dictionary<string, ProjectileDefinition> definitions = new Dictionary<string, ProjectileDefinition>()
         {
-            { "bullet", new ProjectileDefinition("bullet", "bullet", "machinegun", "bullet", 1.0f, -1000.0f, 50.0f, 0.1f) },
-            { "rocket", new ProjectileDefinition("rocket", "spaceship", "missile", "explode2", 50.0f, -50.0f, 500.0f, 1.0f) }
+            { "bullet", new ProjectileDefinition("bullet", "bullet", "machinegun", "bullet", 1.0f, -1000.0f, 50.0f, 0.1f, 1.0f) },
+            { "rocket", new ProjectileDefinition("rocket", "spaceship", "missile", "explode2", 50.0f, -50.0f, 500.0f, 1.0f, 0.0f) }
         };
 
         Vector3 dir;
@@ -55,6 +57,9 @@ namespace FinalProject
             lifeTime = 0.0f;
             dir = d;
             baseVelocity = baseVel;
+            Random rand = new Random();
+
+            var def = Projectile.definitions[type];
             world = Matrix.CreateWorld(pos, d, Vector3.Up);
         }
 

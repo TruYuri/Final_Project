@@ -63,7 +63,7 @@ namespace FinalProject
             var camera = (Camera)other["camera"];
             
             Vector2 pos;
-            if (player.status == PlayerState.Alive)
+            if (player.status == PlayerState.Alive || player.status == PlayerState.WeaponFired)
             {
                 var t = textures["target"];
                 foreach (var player2 in players)

@@ -247,6 +247,7 @@ namespace FinalProject
         {
             var name = packetReader.ReadString();
             var weapon = packetReader.ReadString();
+
             foreach (var player in players)
             {
                 if (player.name == name)
@@ -420,7 +421,6 @@ namespace FinalProject
                         packetWriter.Write((int)MessageType.UpdateRemotePlayer);
                         packetWriter.Write(localPlayer.name);
                         packetWriter.Write(localPlayer.Position);
-                        packetWriter.Write(localPlayer.Forward);
                         packetWriter.Write(localPlayer.Velocity);
                         packetWriter.Write(localPlayer.health);
                         packetWriter.Write(localPlayer.shield);
@@ -476,7 +476,6 @@ namespace FinalProject
                 if (gamer.name == name)
                 {
                     gamer.Position = packetReader.ReadVector3();
-                    gamer.Forward = packetReader.ReadVector3();
                     gamer.Velocity = packetReader.ReadVector3();
                     gamer.health = packetReader.ReadSingle();
                     gamer.shield = packetReader.ReadSingle();

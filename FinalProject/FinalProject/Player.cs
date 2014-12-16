@@ -26,7 +26,6 @@ namespace FinalProject
         public bool alive;
         public string name;
         public Vector3 Position;
-        public Vector3 Forward;
         public Vector3 Velocity;
         public int lives;
         public float respawnTimer;
@@ -40,6 +39,7 @@ namespace FinalProject
         float shieldRechargeDelay;
         BasicModel model;
         List<string> availableWeapons;
+        Vector3 forward;
 
         float weaponChangeTime;
         int weaponIndex;
@@ -71,12 +71,14 @@ namespace FinalProject
             {
                 camera.Update(new GameTime());
                 Position = camera.cameraPosition;
-                Forward = -Matrix.Transpose(camera.view).Forward;
+                Velocity = camera.velocity;
+                forward = Velocity;
+                forward.Normalize();
                 gameObject = new GameObject(new BasicModel(Game1.ContentManager.Load<Model>("spaceship"), new Vector3(0, 600, 0)), false, "vehicle", name);
             }
             else
                 gameObject = new GameObject(new BasicModel(Game1.ContentManager.Load<Model>("spaceship"), new Vector3(0, 600, 0)), true, "vehicle", name);
-            gameObject.world = Matrix.CreateWorld(Position, Forward, Vector3.Up);
+            gameObject.world = Matrix.CreateWorld(Position, forward, Vector3.Up);
             alive = true;
             health = healthMax;
             shield = healthMax;
@@ -113,6 +115,11 @@ namespace FinalProject
                 {
                     camera.Update(gameTime);
                     //AudioManager.Instance.Play("engine", name, false);
+                    Position = camera.cameraPosition;
+                    forward = -Matrix.Transpose(camera.view).Forward; // camera.target;
+                    Velocity = camera.velocity;
+
+                    AudioManager.Instance.UpdatePosition(Position, Velocity, camera.view.Up, forward);
 
                     bool hit = false;
                     if (gameObject != null)
@@ -137,7 +144,7 @@ namespace FinalProject
                                         this.collider = collider.owner;
                                         var def = Projectile.definitions[collider.type];
                                         GameObjectManager.Instance.Delete(collider);
-                                        AudioManager.Instance.Play(def.hitSound, name, true);
+                                        AudioManager.Instance.Play(def.hitSound, name, Position, Vector3.Zero, collider.world.Up, collider.world.Forward);
                                         if (shield > 0.0f)
                                             shield = Math.Max(0.0f, shield - def.damage);
                                         else // damage health
@@ -155,10 +162,6 @@ namespace FinalProject
                     {
                         shield = Math.Min(shieldMax, shield + shieldRechargeRate * shieldMax * time);
                     }
-
-                    Position = camera.cameraPosition;
-                    Forward = -Matrix.Transpose(camera.view).Forward; // camera.target;
-                    Velocity = camera.velocity;
 
                     float? height = null;
                     foreach (var t in map.terrainPieces)
@@ -211,14 +214,17 @@ namespace FinalProject
                     }
 
                     if (gameObject != null)
-                        gameObject.world = Matrix.CreateWorld(Position, Forward, Vector3.Up);
+                        gameObject.world = Matrix.CreateWorld(Position, forward, Vector3.Up);
                 }
             }
             else
             {
+                forward = Velocity;
+                forward.Normalize();
+
                 if (alive)
                 {
-                    var matrix = Matrix.CreateWorld(Position, Forward, Vector3.Up);
+                    var matrix = Matrix.CreateWorld(Position, forward, Vector3.Up);
                     if (gameObject != null)
                     {
                         gameObject.world = matrix;
@@ -240,7 +246,7 @@ namespace FinalProject
                                 {
                                     this.collider = collider.owner;
                                     var def = Projectile.definitions[collider.type];
-                                    AudioManager.Instance.Play(def.hitSound, name, true);
+                                    AudioManager.Instance.Play(def.hitSound, name, Position, Vector3.Zero, collider.world.Up, collider.world.Forward);
                                     GameObjectManager.Instance.Delete(collider);
                                 }
                                 break;
@@ -262,10 +268,12 @@ namespace FinalProject
 
         public void FireWeapon(string weapon)
         {
-            weaponType = weapon;
-            var m = Matrix.CreateWorld(Position, Forward, Vector3.Up);
             var def = Projectile.definitions[weaponType];
-            AudioManager.Instance.Play(def.fireSound, name, false);
+            Random rand = new Random();
+            var m = Matrix.CreateWorld(Position, forward, Vector3.Up);
+            weaponType = weapon;
+
+            AudioManager.Instance.Play(def.fireSound, name, Position, Velocity, camera.view.Up, m.Forward);
             var projectile = new Projectile(Position, m.Forward, Velocity, weaponType, name);
             status = PlayerState.WeaponFired;
         }
@@ -281,7 +289,7 @@ namespace FinalProject
             alive = false;
             health = 0.0f;
             shield = 0.0f;
-            AudioManager.Instance.Play("explode", name, true);
+            AudioManager.Instance.Play("explode", name, Position, Vector3.Zero, Vector3.Up, forward);
             AudioManager.Instance.Pause("engine", name);
         }
 
