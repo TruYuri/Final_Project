@@ -37,7 +37,6 @@ namespace FinalProject
         float timeToNextFire;
         float shieldRechargeRate;
         float shieldRechargeDelay;
-        BasicModel model;
         List<string> availableWeapons;
         Vector3 forward;
 
@@ -141,6 +140,14 @@ namespace FinalProject
                         {
                             switch (collider.type)
                             {
+                                case "health_orb":
+                                    health = (float)Math.Min(healthMax, health + healthMax * 0.25);
+                                    GameObjectManager.Instance.Delete(collider);
+                                    break;
+                                case "shield_orb":
+                                    shield = shieldMax * 2;
+                                    GameObjectManager.Instance.Delete(collider);
+                                    break;
                                 case "vehicle":
                                     this.collider = collider.owner;
                                     Kill(5.0f, PlayerState.CrashedVehicle);
@@ -155,6 +162,7 @@ namespace FinalProject
                                         var def = Projectile.definitions[collider.type];
                                         GameObjectManager.Instance.Delete(collider);
                                         AudioManager.Instance.Play(def.hitSound, name, Position, Vector3.Zero, collider.world.Up, collider.world.Forward);
+
                                         if (shield > 0.0f)
                                             shield = Math.Max(0.0f, shield - def.damage);
                                         else // damage health
@@ -168,7 +176,7 @@ namespace FinalProject
                         }
                     }
 
-                    if(!hit && shieldRechargeDelay <= 0.0f)
+                    if(!hit && shieldRechargeDelay <= 0.0f && shield < shieldMax)
                     {
                         shield = Math.Min(shieldMax, shield + shieldRechargeRate * shieldMax * time);
                     }

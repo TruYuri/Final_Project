@@ -12,7 +12,7 @@ using Microsoft.Xna.Framework.Net;
 
 namespace FinalProject
 {
-    public enum MessageType { UpdatePosition, WeaponFired, EndGame, StartGame, RejoinLobby, RestartGame, UpdateRemotePlayer, Kill, Respawn }
+    public enum MessageType { UpdatePosition, WeaponFired, EndGame, StartGame, RejoinLobby, RestartGame, UpdateRemotePlayer, Kill, Respawn, CreateOrb }
     public enum GameState
     {
         SignIn, FindSession,
@@ -177,6 +177,14 @@ namespace FinalProject
                             break;
                         case MessageType.Respawn:
                             Respawn();
+                            break;
+                        case MessageType.CreateOrb:
+                            
+                            var type = packetReader.ReadInt32();
+                            var pos = packetReader.ReadVector3();
+                            string name = (type == 0 ? "health_orb" : "shield_orb");
+                            var orb = new GameObject(new BasicModel(Content.Load<Model>(name), pos), true, name, "");
+                            orb.world = Matrix.CreateWorld(pos, Vector3.Forward, Vector3.Up);
                             break;
                         //Any other actions for specific messages
 
@@ -421,9 +429,9 @@ namespace FinalProject
             }
 
             // Send data to other player
-            foreach (NetworkGamer gamer in networkSession.AllGamers)
+            //foreach (NetworkGamer gamer in networkSession.AllGamers)
             {
-                if(!gamer.IsLocal)
+                //if(!gamer.IsLocal)
                 {
                     if (localPlayer.alive)
                     {
@@ -434,7 +442,7 @@ namespace FinalProject
                         packetWriter.Write(localPlayer.Velocity);
                         packetWriter.Write(localPlayer.health);
                         packetWriter.Write(localPlayer.shield);
-                        localGamer.SendData(packetWriter, SendDataOptions.InOrder, gamer);
+                        localGamer.SendData(packetWriter, SendDataOptions.InOrder);
 
                         switch(localPlayer.status)
                         {
@@ -442,12 +450,12 @@ namespace FinalProject
                                 packetWriter.Write((int)MessageType.WeaponFired);
                                 packetWriter.Write(localPlayer.name);
                                 packetWriter.Write(localPlayer.weaponType);
-                                localGamer.SendData(packetWriter, SendDataOptions.InOrder, gamer);
+                                localGamer.SendData(packetWriter, SendDataOptions.InOrder);
                                 break;
                             case PlayerState.Respawn:
                                 packetWriter.Write((int)MessageType.Respawn);
                                 packetWriter.Write(localPlayer.name);
-                                localGamer.SendData(packetWriter, SendDataOptions.ReliableInOrder, gamer);
+                                localGamer.SendData(packetWriter, SendDataOptions.ReliableInOrder);
                                 break;
                         }
                     }
@@ -469,7 +477,7 @@ namespace FinalProject
                                 break;
                         }
 
-                        localGamer.SendData(packetWriter, SendDataOptions.ReliableInOrder, gamer);
+                        localGamer.SendData(packetWriter, SendDataOptions.ReliableInOrder);
                     }
                 }
             }
@@ -528,12 +536,12 @@ namespace FinalProject
 
                 if (name != null && deadCount >= nPlayers - 1)
                 {
-                    foreach (NetworkGamer gamer in networkSession.AllGamers)
+                    //foreach (NetworkGamer gamer in networkSession.AllGamers)
                     {
                         packetWriter.Write((int)MessageType.EndGame);
                         packetWriter.Write(name);
                         networkSession.LocalGamers[0].SendData(packetWriter,
-                        SendDataOptions.Reliable, gamer);
+                        SendDataOptions.Reliable);
                     }
 
                     if (deadCount == nPlayers)
@@ -689,7 +697,20 @@ namespace FinalProject
                     // Send message to other player that we're starting
                     //packetWriter.Write((int)MessageType.StartGame);
                     //localGamer.SendData(packetWriter, SendDataOptions.Reliable);
-                    
+                    if (localGamer.IsHost)
+                    {
+
+                        List<GameObject> objects = map.MakePowerups(50);
+
+                        foreach (var go in objects)
+                        {
+                            int type = go.type == "health_orb" ? 0 : 1;
+                            packetWriter.Write((int)MessageType.CreateOrb);
+                            packetWriter.Write(type);
+                            packetWriter.Write(go.world.Translation);
+                            localGamer.SendData(packetWriter, SendDataOptions.ReliableInOrder);
+                        }
+                    }
                     // Call StartGame
                     StartGame();
                 }

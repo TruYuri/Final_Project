@@ -66,6 +66,11 @@
       <Importer>XImporter</Importer>
       <Processor>ModelProcessor</Processor>
     </Compile>
+    <Compile Include="health_orb.x">
+      <Name>health_orb</Name>
+      <Importer>XImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+    </Compile>
     <None Include="Map\Final00">
       <Name>Final00</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -168,6 +173,11 @@
     </None>
     <Compile Include="rocket.x">
       <Name>rocket</Name>
+      <Importer>XImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+    </Compile>
+    <Compile Include="shield_orb.x">
+      <Name>shield_orb</Name>
       <Importer>XImporter</Importer>
       <Processor>ModelProcessor</Processor>
     </Compile>

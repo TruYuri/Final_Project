@@ -31,10 +31,10 @@ namespace FinalProject
         {
             Random rand = new Random();
             float m = (float)Math.Abs(BottomLeft.startPosition.X * 2);
-            float x = -(m / 2.0f) + m * Size.X * (float)rand.NextDouble();
-            float z = (m / 2.0f) - m * Size.Y * (float)rand.NextDouble();
+            double x = -(m / 2.0f) + m * Size.X * rand.NextDouble();
+            double z = (m / 2.0f) - m * Size.Y * rand.NextDouble();
 
-            return new Vector3(x, y, z);
+            return new Vector3((float)x, y, (float)z);
         }
 
         public Vector3 Center(float y)
@@ -46,13 +46,31 @@ namespace FinalProject
             return new Vector3(x, y, z);
         }
 
+        public List<GameObject> MakePowerups(int n)
+        {
+            List<GameObject> orbs = new List<GameObject>();
+            Random rand = new Random();
+            for (int i = 0; i < n; i++)
+            {
+                int b = rand.Next() % 2;
+                string name = (b == 0 ? "health_orb" : "shield_orb");
+                var orb = new GameObject(new BasicModel(Game1.ContentManager.Load<Model>(name), Vector3.Zero), true, name, "");
+                orbs.Add(orb);
+                var pos = CreateRandomSpawnAtHeight(rand.Next() % 400 + 100);
+                orb.world = Matrix.CreateWorld(pos, Vector3.Forward, Vector3.Up);
+                orb.model.World = orb.world;
+            }
+
+            return orbs;
+        }
+
         public void Load()
         {
-            BottomLeft.Load(256, 256, 5.0f, 1.0f, 0.0f);
+            BottomLeft.Load(256, 256, 10.0f, 1.0f, 0.0f);
             float m = (float)Math.Abs(BottomLeft.startPosition.X * 2);
             foreach(var t in terrainPieces)
             {
-                t.Load(256, 256, 5.0f, 1.0f, m);
+                t.Load(256, 256, 10.0f, 1.0f, m);
             }
         }
 

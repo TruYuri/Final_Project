@@ -57,16 +57,11 @@ namespace FinalProject
                     be.EnableDefaultLighting();
                     be.Projection = camera.projection;
                     be.View = camera.view;
-                    be.World = GetWorld() * mesh.ParentBone.Transform;
+                    be.World = World * mesh.ParentBone.Transform;
                 }
                 //Draw
                 mesh.Draw();
             }
-        }
-
-        public virtual Matrix GetWorld()
-        {
-            return world;
         }
     }
 }
