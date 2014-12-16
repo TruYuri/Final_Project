@@ -57,10 +57,21 @@ namespace FinalProject
                     var timer = (number<float>)other["time"];
                     float t = timer.n;
 
-                    pos = new Vector2(Game1.xRes / 2, Game1.yRes / 2) - font.MeasureString("Game over!") / 2;
+                    pos = new Vector2(Game1.xRes / 2, Game1.yRes / 4) - font.MeasureString("Game over!") / 2;
                     spriteBatch.DrawString(font, "Game over!", pos, Color.White);
 
-                    
+                    if(winner == "") // draw
+                    {
+                        pos = new Vector2(Game1.xRes / 2, Game1.yRes / 2) - font.MeasureString("Draw!") / 2;
+                        spriteBatch.DrawString(font, "Draw!", pos, Color.White);
+                    }
+                    else
+                    {
+                        pos = new Vector2(Game1.xRes / 2, Game1.yRes / 2) - font.MeasureString(winner + " won!") / 2;
+                        spriteBatch.DrawString(font, winner + " won!", pos, Color.White);
+                    }
+                    pos = new Vector2(Game1.xRes / 2, Game1.yRes / 2 + Game1.yRes / 4) - font.MeasureString("Next game in " + t.ToString("0")) / 2;
+                    spriteBatch.DrawString(font, "Next game in " + t.ToString("0"), pos, Color.White); 
                     break;
             }
         }
@@ -119,8 +130,8 @@ namespace FinalProject
             }
             else if(player.status == PlayerState.Killed)
             {
-                pos = new Vector2(Game1.xRes / 2, Game1.yRes / 2) - font.MeasureString("Killed by " + player.collider) / 2;
-                spriteBatch.DrawString(font, "Killed by " + player.collider, new Vector2(pos.X, Game1.yRes / 3), Color.White);
+                pos = new Vector2(Game1.xRes / 2, Game1.yRes / 2) - font.MeasureString("Shot down by " + player.collider) / 2;
+                spriteBatch.DrawString(font, "Shot down by " + player.collider, new Vector2(pos.X, Game1.yRes / 3), Color.White);
                 Respawn(spriteBatch, font, player);
             }
         }

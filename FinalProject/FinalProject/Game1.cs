@@ -577,7 +577,7 @@ namespace FinalProject
                 packetWriter.Write((int)MessageType.RestartGame);
                 networkSession.LocalGamers[0].SendData(packetWriter,
                     SendDataOptions.Reliable);
-                //RestartGame();
+                RestartGame();
             }
 
             // If player presses Escape or B button, rejoin lobby
@@ -593,6 +593,27 @@ namespace FinalProject
 
             // Read any incoming messages
             ProcessIncomingData(gameTime);
+        }
+
+        public void RestartGame()
+        {
+            players.Clear();
+            InitializeLevel();
+            foreach(NetworkGamer gamer in networkSession.AllGamers)
+            {
+                if (gamer.IsLocal)
+                {
+                    gamer.Tag = CreateLocalPlayer(gamer.Gamertag);
+                    localPlayer.Initialize();
+                }
+                else
+                {
+                    Player remote = new Player(this, camera, map, false, gamer.Gamertag);
+                    remote.Initialize();
+                    players.Add(remote);
+                    gamer.Tag = remote;
+                }
+            }
         }
 
         protected void Update_SignIn()
@@ -678,11 +699,10 @@ namespace FinalProject
 
             if (this.IsActive)
             {
-                GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-                GraphicsDevice.BlendState = BlendState.Opaque;
-
                 GraphicsDevice.SetRenderTarget(renderTarget);
                 GraphicsDevice.Clear(Color.CornflowerBlue);
+                GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+                GraphicsDevice.BlendState = BlendState.Opaque;
                 // Based on the current game state,
                 // call the appropriate method
                 switch (currentGameState)
