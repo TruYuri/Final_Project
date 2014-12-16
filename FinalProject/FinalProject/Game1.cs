@@ -383,9 +383,9 @@ namespace FinalProject
 
             map.Load();
 
-            var pos = map.CreateRandomSpawnAtHeight(600);
+            var pos = map.CreateRandomSpawnAtHeight(600, new Random());
             var c = map.Center(600);
-            camera.PlaceCamera(map.CreateRandomSpawnAtHeight(600), c - pos, Vector3.Up);
+            camera.PlaceCamera(pos, c - pos, Vector3.Up);
         }
 
         private object CreateLocalPlayer(string name)

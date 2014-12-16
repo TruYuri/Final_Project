@@ -27,12 +27,11 @@ namespace FinalProject
             startingPositions = new List<Vector3>();
         }
 
-        public Vector3 CreateRandomSpawnAtHeight(float y)
+        public Vector3 CreateRandomSpawnAtHeight(float y, Random generator)
         {
-            Random rand = new Random();
             float m = (float)Math.Abs(BottomLeft.startPosition.X * 2);
-            double x = -(m / 2.0f) + m * Size.X * rand.NextDouble();
-            double z = (m / 2.0f) - m * Size.Y * rand.NextDouble();
+            double x = -(m / 2.0f) + m * Size.X * generator.NextDouble();
+            double z = (m / 2.0f) - m * Size.Y * generator.NextDouble();
 
             return new Vector3((float)x, y, (float)z);
         }
@@ -50,13 +49,15 @@ namespace FinalProject
         {
             List<GameObject> orbs = new List<GameObject>();
             Random rand = new Random();
+            Vector3 pos = new Vector3();
             for (int i = 0; i < n; i++)
             {
                 int b = rand.Next() % 2;
                 string name = (b == 0 ? "health_orb" : "shield_orb");
                 var orb = new GameObject(new BasicModel(Game1.ContentManager.Load<Model>(name), Vector3.Zero), true, name, "");
                 orbs.Add(orb);
-                var pos = CreateRandomSpawnAtHeight(rand.Next() % 400 + 100);
+                //var pos = CreateRandomSpawnAtHeight(rand.Next() % 400 + 100);
+                pos = CreateRandomSpawnAtHeight(300, rand);
                 orb.world = Matrix.CreateWorld(pos, Vector3.Forward, Vector3.Up);
                 orb.model.World = orb.world;
             }

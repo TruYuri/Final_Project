@@ -113,9 +113,9 @@ namespace FinalProject
                     respawnTimer -= time;
                     if(respawnTimer <= 0.0f)
                     {
-                        var pos = map.CreateRandomSpawnAtHeight(600);
+                        var pos = map.CreateRandomSpawnAtHeight(600, new Random());
                         var c = map.Center(600);
-                        camera.PlaceCamera(map.CreateRandomSpawnAtHeight(600), c - pos, Vector3.Up);
+                        camera.PlaceCamera(pos, c - pos, Vector3.Up);
                         Initialize();
                         status = PlayerState.Respawn;
                     }
@@ -279,6 +279,12 @@ namespace FinalProject
                     {
                         switch (collider.type)
                         {
+                            case "health_orb":
+                                GameObjectManager.Instance.Delete(collider);
+                                break;
+                            case "shield_orb":
+                                GameObjectManager.Instance.Delete(collider);
+                                break;
                             case "vehicle":
                                 // play crash sound
                                 break;
