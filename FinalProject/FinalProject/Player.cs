@@ -154,7 +154,7 @@ namespace FinalProject
                                             health = Math.Max(0.0f, health - def.damage);
 
                                         if(health <= 0.0f)
-                                            Kill(5.0f, PlayerState.Killed);
+                                            Kill(5.0f, PlayerState.CrashedGround);
                                     }
                                     break;
                             }

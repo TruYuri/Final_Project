@@ -118,8 +118,8 @@ namespace FinalProject
             // Set game state to InGame
             currentGameState = GameState.InGame;
             Interface.LoadGameplayInterface(players, camera);
-            //GameObjectManager.Instance.Reset();
-            //map.Load();
+            GameObjectManager.Instance.Reset();
+            
             // Any other things that need to be set up
             //for beginning a game
             //Starting audio, resetting values, etc.
@@ -515,6 +515,9 @@ namespace FinalProject
                     else
                         name = player.name;
                 }
+
+                if (localPlayer.lives <= 0)
+                    deadCount++;
 
                 if (name != null && deadCount == nPlayers - 1)
                 {
