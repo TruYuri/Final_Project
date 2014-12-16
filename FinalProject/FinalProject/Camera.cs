@@ -66,7 +66,7 @@ namespace FinalProject
             else if (kState.IsKeyDown(Keys.S))
                 throttle = Math.Max(throttle - throttleRate * time, 0.05f);
 
-            velocity = cameraDirection * 3000 * throttle * s * time;
+            velocity = cameraDirection * 1000 * throttle * s * time;
             cameraPosition += velocity;
             target += velocity;
 

@@ -31,9 +31,10 @@ namespace FinalProject
         Camera camera;
         Player localPlayer;
         List<Player> players;
-        static int nPlayers = 3;
+        static int nPlayers = 2;
         Map map;
         Interface iface;
+        List<GameObject> powerups;
 
         number<float> RestartTime;
 
@@ -74,7 +75,7 @@ namespace FinalProject
             ContentManager = Content;
             GraphicsDeviceRef = GraphicsDevice;
             font = Content.Load<SpriteFont>("font");
-            renderTarget = new RenderTarget2D(GraphicsDevice, xRes, yRes, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
+            renderTarget = new RenderTarget2D(GraphicsDevice, xRes, yRes, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24Stencil8);
         }
 
         protected override void UnloadContent() { }
@@ -376,6 +377,13 @@ namespace FinalProject
             map.terrainPieces.Add(x4y2);
             map.terrainPieces.Add(x4y3);
             map.terrainPieces.Add(x4y4);
+
+            if (powerups == null)
+                powerups = new List<GameObject>();
+            foreach(var powerup in powerups)
+            {
+                GameObjectManager.Instance.Delete(powerup);
+            }
 
             map.BottomLeft = x0y0;
             #endregion
@@ -686,7 +694,7 @@ namespace FinalProject
             
             // Check for game start key or button press
             // only if there are two players
-            if (networkSession.AllGamers.Count == nPlayers || localGamer.IsHost)
+            if (networkSession.AllGamers.Count == nPlayers)
             {
                 // If space bar or Start button is pressed, begin the game
                 //if (Keyboard.GetState().IsKeyDown(Keys.Space) ||
@@ -698,10 +706,9 @@ namespace FinalProject
                     //localGamer.SendData(packetWriter, SendDataOptions.Reliable);
                     if (localGamer.IsHost)
                     {
+                        powerups = map.MakePowerups(50);
 
-                        List<GameObject> objects = map.MakePowerups(50);
-
-                        foreach (var go in objects)
+                        foreach (var go in powerups)
                         {
                             int type = go.type == "health_orb" ? 0 : 1;
                             packetWriter.Flush();
@@ -725,10 +732,13 @@ namespace FinalProject
 
             if (this.IsActive)
             {
+                GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+                GraphicsDevice.BlendState = BlendState.Opaque;
                 GraphicsDevice.SetRenderTarget(renderTarget);
                 GraphicsDevice.Clear(Color.CornflowerBlue);
                 GraphicsDevice.DepthStencilState = DepthStencilState.Default;
                 GraphicsDevice.BlendState = BlendState.Opaque;
+
                 // Based on the current game state,
                 // call the appropriate method
                 switch (currentGameState)
@@ -754,11 +764,14 @@ namespace FinalProject
             }
 
             GraphicsDevice.SetRenderTarget(null);
-
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            GraphicsDevice.BlendState = BlendState.Opaque;
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
             spriteBatch.Draw(renderTarget, new Rectangle(0, 0, xRes, yRes), Color.White);
             iface.Draw(spriteBatch, font, currentGameState, localPlayer);
             spriteBatch.End();
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            GraphicsDevice.BlendState = BlendState.Opaque;
 
             base.Draw(gameTime);
         }

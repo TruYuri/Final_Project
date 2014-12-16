@@ -55,7 +55,24 @@ namespace FinalProject
                 string name = (b == 0 ? "health_orb" : "shield_orb");
                 var orb = new GameObject(new BasicModel(Game1.ContentManager.Load<Model>(name), Vector3.Zero), true, name, "");
                 orbs.Add(orb);
-                pos = CreateRandomSpawnAtHeight(rand.Next() % 400 + 100, rand);
+                pos = CreateRandomSpawnAtHeight(0, rand);
+                orb.world = Matrix.CreateWorld(pos, Vector3.Forward, Vector3.Up);
+                orb.model.World = orb.world;
+
+                pos.Y = 1000000;
+                float? height = null;
+                foreach (var t in terrainPieces)
+                {
+                    height = t.Intersects(new Ray(pos, Vector3.Down));
+
+                    if (height != null)
+                        break;
+                }
+                if (height != null)
+                {
+                    pos.Y = pos.Y - (float)height + rand.Next() % 400;
+                }
+
                 orb.world = Matrix.CreateWorld(pos, Vector3.Forward, Vector3.Up);
                 orb.model.World = orb.world;
             }
@@ -65,11 +82,11 @@ namespace FinalProject
 
         public void Load()
         {
-            BottomLeft.Load(256, 256, 10.0f, 1.0f, 0.0f);
+            BottomLeft.Load(256, 256, 10.0f, 8.0f, 0.0f);
             float m = (float)Math.Abs(BottomLeft.startPosition.X * 2);
             foreach(var t in terrainPieces)
             {
-                t.Load(256, 256, 10.0f, 1.0f, m);
+                t.Load(256, 256, 10.0f, 8.0f, m);
             }
         }
 

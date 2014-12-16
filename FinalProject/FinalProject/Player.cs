@@ -223,7 +223,11 @@ namespace FinalProject
                         Kill(5.0f, PlayerState.CrashedGround);
                     }
                     else
+                    {
+                        if (alive)
+                            status = PlayerState.Alive;
                         outOfBounds = false;
+                    }
 
                     if(weaponChangeTime <= 0.0f)
                     {
