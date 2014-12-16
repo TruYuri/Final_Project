@@ -27,7 +27,7 @@ namespace FinalProject
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         SpriteFont font;
-
+        Song song;
         Camera camera;
         Player localPlayer;
         List<Player> players;
@@ -303,6 +303,11 @@ namespace FinalProject
             Components.Add(gom);
             Components.Add(am);
 
+            if(song == null)
+                song = Content.Load<Song>(@"Audio/Yerusholayim");
+            else
+                am.StopSong();
+            am.PlaySong(song);
             #region Map
 
             Terrain x0y0 = new Terrain(@"Map\Final00", @"Map\Final00_Texture", 0, 0);
