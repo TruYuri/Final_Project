@@ -178,8 +178,7 @@ namespace FinalProject
                         case MessageType.Respawn:
                             Respawn();
                             break;
-                        case MessageType.CreateOrb:
-                            
+                        case MessageType.CreateOrb:    
                             var type = packetReader.ReadInt32();
                             var pos = packetReader.ReadVector3();
                             string name = (type == 0 ? "health_orb" : "shield_orb");
@@ -687,7 +686,7 @@ namespace FinalProject
             
             // Check for game start key or button press
             // only if there are two players
-            if (networkSession.AllGamers.Count == nPlayers || localPlayer != null)
+            if (networkSession.AllGamers.Count == nPlayers || localGamer.IsHost)
             {
                 // If space bar or Start button is pressed, begin the game
                 //if (Keyboard.GetState().IsKeyDown(Keys.Space) ||
@@ -705,6 +704,7 @@ namespace FinalProject
                         foreach (var go in objects)
                         {
                             int type = go.type == "health_orb" ? 0 : 1;
+                            packetWriter.Flush();
                             packetWriter.Write((int)MessageType.CreateOrb);
                             packetWriter.Write(type);
                             packetWriter.Write(go.world.Translation);

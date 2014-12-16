@@ -127,8 +127,11 @@ namespace FinalProject
                     Position = camera.cameraPosition;
                     forward = -Matrix.Transpose(camera.view).Forward; // camera.target;
                     Velocity = camera.velocity;
-
+                    var def = Projectile.definitions[weaponType];
                     AudioManager.Instance.UpdatePosition(Position, Velocity, camera.view.Up, forward);
+
+                    if (gameObject != null)
+                        gameObject.world = Matrix.CreateWorld(Position, forward, Vector3.Up);
 
                     bool hit = false;
                     if (gameObject != null)
@@ -158,15 +161,15 @@ namespace FinalProject
                                     shieldRechargeDelay = 5.0f;
                                     if (collider.owner != name)
                                     {
+                                        var def2 = Projectile.definitions[collider.type];
                                         this.collider = collider.owner;
-                                        var def = Projectile.definitions[collider.type];
                                         GameObjectManager.Instance.Delete(collider);
-                                        AudioManager.Instance.Play(def.hitSound, name, Position, Vector3.Zero, collider.world.Up, collider.world.Forward);
+                                        AudioManager.Instance.Play(def2.hitSound, name, Position, Vector3.Zero, collider.world.Up, collider.world.Forward);
 
                                         if (shield > 0.0f)
-                                            shield = Math.Max(0.0f, shield - def.damage);
+                                            shield = Math.Max(0.0f, shield - def2.damage);
                                         else // damage health
-                                            health = Math.Max(0.0f, health - def.damage);
+                                            health = Math.Max(0.0f, health - def2.damage);
 
                                         if(health <= 0.0f)
                                             Kill(5.0f, PlayerState.Killed);
@@ -175,6 +178,9 @@ namespace FinalProject
                             }
                         }
                     }
+
+                    if (!alive)
+                        return;
 
                     if(!hit && shieldRechargeDelay <= 0.0f && shield < shieldMax)
                     {
@@ -217,43 +223,33 @@ namespace FinalProject
                         Kill(5.0f, PlayerState.CrashedGround);
                     }
                     else
-                    {
-                        status = PlayerState.Alive;
                         outOfBounds = false;
-                    }
 
-                    if (alive)
+                    if(weaponChangeTime <= 0.0f)
                     {
-                        var def = Projectile.definitions[weaponType];
-
-                        if(weaponChangeTime <= 0.0f)
+                        if(mState.ScrollWheelValue < prevMouseWheel || kState.IsKeyDown(Keys.Q))
                         {
-                            if(mState.ScrollWheelValue < prevMouseWheel || kState.IsKeyDown(Keys.Q))
-                            {
-                                weaponChangeTime = 0.5f;
-                                weaponIndex = (weaponIndex + 1) % availableWeapons.Count();
-                                timeToNextFire = 0.0f;
-                            }
-                            else if(mState.ScrollWheelValue > prevMouseWheel || kState.IsKeyDown(Keys.E))
-                            {
-                                weaponChangeTime = 0.0f;
-                                weaponIndex = (weaponIndex - 1 < 0 ? availableWeapons.Count - 1 : weaponIndex - 1);
-                            }
-
-                            weaponType = availableWeapons[weaponIndex];
-                        }
-
-                        if ((mState.LeftButton == ButtonState.Pressed || kState.IsKeyDown(Keys.Space)) && def.fireTime - timeToNextFire <= 0.0f)
-                        {
+                            weaponChangeTime = 0.5f;
+                            weaponIndex = (weaponIndex + 1) % availableWeapons.Count();
                             timeToNextFire = 0.0f;
-                            FireWeapon(availableWeapons[weaponIndex]);
+                        }
+                        else if(mState.ScrollWheelValue > prevMouseWheel || kState.IsKeyDown(Keys.E))
+                        {
+                            weaponChangeTime = 0.0f;
+                            weaponIndex = (weaponIndex - 1 < 0 ? availableWeapons.Count - 1 : weaponIndex - 1);
                         }
 
-                        prevMouseWheel = mState.ScrollWheelValue;
+                        weaponType = availableWeapons[weaponIndex];
+                        def = Projectile.definitions[weaponType];
                     }
 
-                    if (gameObject != null)
-                        gameObject.world = Matrix.CreateRotationX(MathHelper.PiOver2) * Matrix.CreateWorld(Position, forward, Vector3.Up);
+                    if ((mState.LeftButton == ButtonState.Pressed || kState.IsKeyDown(Keys.Space)) && def.fireTime - timeToNextFire <= 0.0f)
+                    {
+                        timeToNextFire = 0.0f;
+                        FireWeapon(weaponType);
+                    }
+
+                    prevMouseWheel = mState.ScrollWheelValue;
                 }
             }
             else
@@ -306,7 +302,6 @@ namespace FinalProject
                 if (alive)
                 {
                     status = PlayerState.Alive;
-                    //AudioManager.Instance.Play("engine", name, false);
                 }
                 else
                 {

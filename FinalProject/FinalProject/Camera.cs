@@ -27,7 +27,7 @@ namespace FinalProject
         int screenCenterX;
         int screenCenterY;
         Map map;
-        float throttle;
+        public float throttle;
         float throttleRate;
 
         public Camera(Game game, Map t)

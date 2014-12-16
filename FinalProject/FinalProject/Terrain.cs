@@ -16,15 +16,14 @@ namespace FinalProject
     {
         // string is a LRUP combo, determining which direction to render the piece from the center. 
         public List<Terrain> terrainPieces;
-        public List<Vector3> startingPositions;
         public Terrain BottomLeft;
         public Vector2 Size;
+
 
         public Map(Vector2 s)
         {
             Size = s;
             terrainPieces = new List<Terrain>();
-            startingPositions = new List<Vector3>();
         }
 
         public Vector3 CreateRandomSpawnAtHeight(float y, Random generator)
@@ -56,8 +55,7 @@ namespace FinalProject
                 string name = (b == 0 ? "health_orb" : "shield_orb");
                 var orb = new GameObject(new BasicModel(Game1.ContentManager.Load<Model>(name), Vector3.Zero), true, name, "");
                 orbs.Add(orb);
-                //var pos = CreateRandomSpawnAtHeight(rand.Next() % 400 + 100);
-                pos = CreateRandomSpawnAtHeight(300, rand);
+                pos = CreateRandomSpawnAtHeight(rand.Next() % 400 + 100, rand);
                 orb.world = Matrix.CreateWorld(pos, Vector3.Forward, Vector3.Up);
                 orb.model.World = orb.world;
             }
