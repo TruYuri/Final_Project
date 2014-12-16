@@ -58,7 +58,7 @@ namespace FinalProject
             status = PlayerState.Alive;
             weaponType = "bullet";
             timeToNextFire = Projectile.definitions[weaponType].fireTime;
-            lives = 1;
+            lives = 5;
             availableWeapons = new List<string>() { "bullet", "rocket" };
             weaponChangeTime = 0.0f;
             prevMouseWheel = Mouse.GetState().ScrollWheelValue;
@@ -77,10 +77,13 @@ namespace FinalProject
                 Velocity = camera.velocity;
                 forward = Velocity;
                 forward.Normalize();
-                gameObject = new GameObject(new BasicModel(Game1.ContentManager.Load<Model>("spaceship"), new Vector3(0, 600, 0)), false, "vehicle", name);
+                gameObject = new GameObject(new BasicModel(Game1.ContentManager.Load<Model>("spaceship"), new Vector3(0, 0, 0)), false, "vehicle", name);
             }
             else
-                gameObject = new GameObject(new BasicModel(Game1.ContentManager.Load<Model>("spaceship"), new Vector3(0, 600, 0)), true, "vehicle", name);
+            {
+                gameObject = new GameObject(new BasicModel(Game1.ContentManager.Load<Model>("spaceship"), new Vector3(0, 0, 0)), true, "vehicle", name);
+                forward = Vector3.Forward;
+            }
             gameObject.world = Matrix.CreateWorld(Position, forward, Vector3.Up);
             alive = true;
             health = healthMax;
@@ -217,13 +220,17 @@ namespace FinalProject
                     }
 
                     if (gameObject != null)
-                        gameObject.world = Matrix.CreateWorld(Position, forward, Vector3.Up);
+                        gameObject.world = Matrix.CreateRotationX(MathHelper.PiOver2) * Matrix.CreateWorld(Position, forward, Vector3.Up);
                 }
             }
             else
             {
                 forward = -Velocity;
-                forward.Normalize();
+                if (forward == Vector3.Zero)
+                    forward = Vector3.Forward;
+                else
+                    forward.Normalize();
+
 
                 if (alive)
                 {

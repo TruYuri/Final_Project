@@ -43,8 +43,8 @@ namespace FinalProject
     {
         public static Dictionary<string, ProjectileDefinition> definitions = new Dictionary<string, ProjectileDefinition>()
         {
-            { "bullet", new ProjectileDefinition("bullet", "bullet", "machinegun", "bullet", 1.0f, -1000.0f, 50.0f, 0.1f, 1.0f) },
-            { "rocket", new ProjectileDefinition("rocket", "spaceship", "missile", "explode2", 50.0f, -50.0f, 500.0f, 1.0f, 0.0f) }
+            { "bullet", new ProjectileDefinition("bullet", "bullet", "machinegun", "bullet", 1.0f, -500.0f, 50.0f, 0.1f, 1.0f) },
+            { "rocket", new ProjectileDefinition("rocket", "rocket", "missile", "explode2", 50.0f, -300.0f, 500.0f, 1.0f, 0.0f) }
         };
 
         Vector3 dir;
@@ -75,7 +75,10 @@ namespace FinalProject
 
             var pos = world.Translation;
             pos += baseVelocity + dir * (float)gameTime.ElapsedGameTime.TotalSeconds * def.speed;
-            world = (type == "bullet" ? Matrix.CreateRotationY(-MathHelper.PiOver2) : Matrix.Identity ) * Matrix.CreateWorld(pos, dir, Vector3.Up);
+            if(type == "bullet")
+                 world = Matrix.CreateRotationY(-MathHelper.PiOver2) * Matrix.CreateWorld(pos, dir, Vector3.Up);
+            else if(type == "rocket")
+                 world = Matrix.CreateScale(0.01f, 0.01f, 0.01f) * Matrix.CreateRotationX(MathHelper.PiOver2) * Matrix.CreateWorld(pos, dir, Vector3.Up);
 
             base.Update(gameTime);
         }

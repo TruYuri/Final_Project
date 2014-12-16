@@ -57,7 +57,7 @@ namespace FinalProject
             currentGameState = GameState.SignIn;
             packetWriter = new PacketWriter();
             packetReader = new PacketReader();
-
+            RestartTime = new number<float>();
             players = new List<Player>();
         }
 
@@ -118,7 +118,7 @@ namespace FinalProject
             // Set game state to InGame
             currentGameState = GameState.InGame;
             Interface.LoadGameplayInterface(players, camera);
-            GameObjectManager.Instance.Reset();
+            //GameObjectManager.Instance.Reset();
             
             // Any other things that need to be set up
             //for beginning a game
@@ -518,8 +518,10 @@ namespace FinalProject
 
                 if (localPlayer.lives <= 0)
                     deadCount++;
+                else
+                    name = localPlayer.name;
 
-                if (name != null && deadCount == nPlayers - 1)
+                if (name != null && deadCount >= nPlayers - 1)
                 {
                     foreach (NetworkGamer gamer in networkSession.AllGamers)
                     {
@@ -529,6 +531,8 @@ namespace FinalProject
                         SendDataOptions.Reliable, gamer);
                     }
 
+                    if (deadCount == nPlayers)
+                        name = "";
                     EndGame(name);
                 }
             }
