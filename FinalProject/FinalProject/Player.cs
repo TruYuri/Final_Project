@@ -267,6 +267,7 @@ namespace FinalProject
             var def = Projectile.definitions[weaponType];
             AudioManager.Instance.Play(def.fireSound, name, false);
             var projectile = new Projectile(Position, m.Forward, Velocity, weaponType, name);
+            status = PlayerState.WeaponFired;
         }
 
         public void Kill(float respawn, PlayerState reason)

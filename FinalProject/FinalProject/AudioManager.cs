@@ -73,7 +73,8 @@ namespace FinalProject
 
         public void AddPlayer(string name)
         {
-            m_audioQueue.Add(name, new Dictionary<string, Cue>());
+            if(!m_audioQueue.ContainsKey(name))
+                m_audioQueue.Add(name, new Dictionary<string, Cue>());
         }
 
         public void Pause(string name, string player)

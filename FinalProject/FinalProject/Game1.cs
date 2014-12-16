@@ -282,7 +282,7 @@ namespace FinalProject
 
         private void InitializeLevel()
         {
-            map = new Map(new Vector2(1, 5));
+            map = new Map(new Vector2(5, 5));
             
             if(camera == null)
                 camera = new Camera(this, map);
@@ -437,7 +437,7 @@ namespace FinalProject
                             case PlayerState.Respawn:
                                 packetWriter.Write((int)MessageType.Respawn);
                                 packetWriter.Write(localPlayer.name);
-                                localGamer.SendData(packetWriter, SendDataOptions.InOrder, gamer);
+                                localGamer.SendData(packetWriter, SendDataOptions.ReliableInOrder, gamer);
                                 break;
                         }
                     }
@@ -459,7 +459,7 @@ namespace FinalProject
                                 break;
                         }
 
-                        localGamer.SendData(packetWriter, SendDataOptions.InOrder, gamer);
+                        localGamer.SendData(packetWriter, SendDataOptions.ReliableInOrder, gamer);
                     }
                 }
             }
