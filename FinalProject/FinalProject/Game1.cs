@@ -31,8 +31,11 @@ namespace FinalProject
         Camera camera;
         Player localPlayer;
         List<Player> players;
+        static int nPlayers = 2;
         Map map;
         Interface iface;
+
+        number<float> RestartTime;
 
         NetworkSession networkSession;
         PacketWriter packetWriter;
@@ -122,12 +125,14 @@ namespace FinalProject
             //Starting audio, resetting values, etc.
         }
 
-        protected void EndGame()
+        protected void EndGame(string winner)
         {
             //Perform whatever actions are to occur
             //when a game ends. Stop music, play
             //A certain sound effect, etc.
+            RestartTime.n = 20.0f;
             currentGameState = GameState.GameOver;
+            Interface.LoadGameoverInterface(winner, RestartTime);
         }
 
         protected void ProcessIncomingData(GameTime gameTime)
@@ -150,7 +155,7 @@ namespace FinalProject
                     switch (messageType)
                     {
                         case MessageType.EndGame:
-                            EndGame();
+                            EndGame(packetReader.ReadString());
                             break;
                         case MessageType.StartGame:
                             StartGame();
@@ -498,13 +503,32 @@ namespace FinalProject
             if (networkSession.IsHost)
             {
                     // Check for end game conditions, if they are met send a message to other player
-	            /*{
-	                packetWriter.Write((int)MessageType.EndGame);
-                    networkSession.LocalGamers[0].SendData(packetWriter, 
-		            SendDataOptions.Reliable);
-		            EndGame();
-                }*/
-              }
+                string name = null;
+                int deadCount = 0;
+                foreach (var player in players)
+                {
+                    if (player.lives <= 0)
+                    {
+                        deadCount++;
+                        break;
+                    }
+                    else
+                        name = player.name;
+                }
+
+                if (name != null && deadCount == nPlayers - 1)
+                {
+                    foreach (NetworkGamer gamer in networkSession.AllGamers)
+                    {
+                        packetWriter.Write((int)MessageType.EndGame);
+                        packetWriter.Write(name);
+                        networkSession.LocalGamers[0].SendData(packetWriter,
+                        SendDataOptions.Reliable, gamer);
+                    }
+
+                    EndGame(name);
+                }
+            }
         }
 
         void GamerLeft(object sender, GamerLeftEventArgs e)
@@ -536,10 +560,11 @@ namespace FinalProject
         {
             KeyboardState keyboardState = Keyboard.GetState();
             GamePadState gamePadSate = GamePad.GetState(PlayerIndex.One);
+            RestartTime.n -= (float)gameTime.ElapsedGameTime.TotalSeconds;
             
             // If player presses Enter or A button, restart game
             if (keyboardState.IsKeyDown(Keys.Enter) ||
-                gamePadSate.Buttons.A == ButtonState.Pressed)
+                gamePadSate.Buttons.A == ButtonState.Pressed || RestartTime.n <= 0.0f)
             {
                 // Send restart game message
                 packetWriter.Write((int)MessageType.RestartGame);
@@ -621,8 +646,7 @@ namespace FinalProject
             
             // Check for game start key or button press
             // only if there are two players
-            //if (networkSession.AllGamers.Count == 2)
-            if(localPlayer != null)
+            if (networkSession.AllGamers.Count == nPlayers || localPlayer != null)
             {
                 // If space bar or Start button is pressed, begin the game
                 //if (Keyboard.GetState().IsKeyDown(Keys.Space) ||

@@ -12,6 +12,11 @@ using Microsoft.Xna.Framework.Media;
 
 namespace FinalProject
 {
+    class number<t>
+    {
+        public t n;
+    }
+
     class Interface
     {
         private static Dictionary<string, Texture2D> textures;
@@ -48,8 +53,14 @@ namespace FinalProject
                     DrawGameplayScreen(spriteBatch, font, player);
                     break;
                 case GameState.GameOver:
+                    var winner = (string)other["winner"];
+                    var timer = (number<float>)other["time"];
+                    float t = timer.n;
+
                     pos = new Vector2(Game1.xRes / 2, Game1.yRes / 2) - font.MeasureString("Game over!") / 2;
                     spriteBatch.DrawString(font, "Game over!", pos, Color.White);
+
+                    
                     break;
             }
         }
@@ -131,6 +142,15 @@ namespace FinalProject
 
             textures.Add("reticle", Game1.ContentManager.Load<Texture2D>("primary_reticle"));
             textures.Add("target", Game1.ContentManager.Load<Texture2D>("object_reticle"));
+        }
+
+        public static void LoadGameoverInterface(string winner, number<float> time)
+        {
+            textures = new Dictionary<string, Texture2D>();
+            other = new Dictionary<string, object>();
+
+            other.Add("winner", winner);
+            other.Add("time", time);
         }
     }
 }

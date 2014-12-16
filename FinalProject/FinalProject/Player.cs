@@ -67,6 +67,9 @@ namespace FinalProject
 
         public void Initialize()
         {
+            if (lives <= 0)
+                return;
+
             if (localPlayer)
             {
                 camera.Update(new GameTime());
@@ -219,7 +222,7 @@ namespace FinalProject
             }
             else
             {
-                forward = Velocity;
+                forward = -Velocity;
                 forward.Normalize();
 
                 if (alive)
@@ -283,6 +286,7 @@ namespace FinalProject
             if (!alive)
                 return;
 
+            lives--;
             status = reason;
             respawnTimer = respawn;
             Delete();
