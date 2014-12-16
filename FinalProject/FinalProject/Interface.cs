@@ -134,6 +134,20 @@ namespace FinalProject
                 spriteBatch.DrawString(font, "Shot down by " + player.collider, new Vector2(pos.X, Game1.yRes / 3), Color.White);
                 Respawn(spriteBatch, font, player);
             }
+            else if(player.status == PlayerState.OutOfBounds)
+            {
+                Vector2 m = font.MeasureString("Out of bounds!  Turn back!") / 2;
+                pos = new Vector2(Game1.xRes / 2, Game1.yRes / 2) - m;
+                var pos2 = new Vector2(Game1.xRes / 2, Game1.yRes / 2) - font.MeasureString(player.boundsTimer.ToString("0")) / 2;
+                spriteBatch.DrawString(font, "Out of bounds! Turn back!", new Vector2(pos.X, Game1.yRes / 3), Color.White);
+                spriteBatch.DrawString(font, player.boundsTimer.ToString("0"), new Vector2(pos2.X, Game1.yRes / 3 + m.Y * 2), Color.White);
+            }
+            else if(player.status == PlayerState.DiedOOB)
+            {
+                pos = new Vector2(Game1.xRes / 2, Game1.yRes / 2) - font.MeasureString("Flew too long out of bounds!") / 2;
+                spriteBatch.DrawString(font, "Flew too long out of bounds!", new Vector2(pos.X, Game1.yRes / 3), Color.White);
+                Respawn(spriteBatch, font, player);
+            }
         }
 
         private void Respawn(SpriteBatch spriteBatch, SpriteFont font, Player player)

@@ -599,6 +599,7 @@ namespace FinalProject
         {
             players.Clear();
             InitializeLevel();
+            GameObjectManager.Instance.Reset();
             foreach(NetworkGamer gamer in networkSession.AllGamers)
             {
                 if (gamer.IsLocal)
@@ -608,12 +609,11 @@ namespace FinalProject
                 }
                 else
                 {
-                    Player remote = new Player(this, camera, map, false, gamer.Gamertag);
-                    remote.Initialize();
-                    players.Add(remote);
-                    gamer.Tag = remote;
+                    gamer.Tag = CreateRemotePlayer(gamer.Gamertag);
                 }
             }
+
+            currentGameState = GameState.Start;
         }
 
         protected void Update_SignIn()

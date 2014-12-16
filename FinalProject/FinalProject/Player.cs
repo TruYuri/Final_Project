@@ -13,7 +13,7 @@ using Microsoft.Xna.Framework.Net;
 
 namespace FinalProject
 {
-    public enum PlayerState { Alive, WeaponFired, CrashedGround, CrashedVehicle, Killed, Respawn, Left }
+    public enum PlayerState { Alive, WeaponFired, CrashedGround, CrashedVehicle, Killed, Respawn, Left, OutOfBounds, DiedOOB }
     class Player
     {
         public PlayerState status;
@@ -44,6 +44,8 @@ namespace FinalProject
         float weaponChangeTime;
         int weaponIndex;
         int prevMouseWheel;
+        public float boundsTimer;
+        bool outOfBounds;
 
         public Player(Game game, Camera c, Map t, bool local, string n)
         {
@@ -63,6 +65,7 @@ namespace FinalProject
             weaponChangeTime = 0.0f;
             prevMouseWheel = Mouse.GetState().ScrollWheelValue;
             AudioManager.Instance.AddPlayer(name);
+            outOfBounds = false;
         }
 
         public void Initialize()
@@ -99,6 +102,7 @@ namespace FinalProject
             timeToNextFire += time;
             weaponChangeTime -= time;
             shieldRechargeDelay -= time;
+            boundsTimer -= time;
 
             if (status == PlayerState.Respawn || status == PlayerState.WeaponFired)
                 status = PlayerState.Alive;
@@ -180,13 +184,34 @@ namespace FinalProject
 
                     if (height == null)
                     {
-                        // out of bounds checking
-
+                        if (outOfBounds)
+                        {
+                            if (boundsTimer <= 0.0f)
+                            {
+                                Kill(10.0f, PlayerState.DiedOOB);
+                            }
+                            else
+                            {
+                                status = PlayerState.OutOfBounds;
+                            }
+                        }
+                        else
+                        {
+                            outOfBounds = true;
+                            boundsTimer = 10.0f;
+                            status = PlayerState.OutOfBounds;
+                        }
                     }
                     else if (height - 25.0 < 0.0f)
                     {
+                        outOfBounds = false;
                         this.collider = "the ground";
                         Kill(5.0f, PlayerState.CrashedGround);
+                    }
+                    else
+                    {
+                        status = PlayerState.Alive;
+                        outOfBounds = false;
                     }
 
                     if (alive)
