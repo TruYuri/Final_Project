@@ -31,7 +31,7 @@ namespace FinalProject
         Camera camera;
         Player localPlayer;
         List<Player> players;
-        static int nPlayers = 2;
+        static int nPlayers = 3;
         Map map;
         Interface iface;
         List<GameObject> powerups;
