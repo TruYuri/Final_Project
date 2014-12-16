@@ -127,9 +127,20 @@ namespace FinalProject
 
         private void Respawn(SpriteBatch spriteBatch, SpriteFont font, Player player)
         {
-            string respawn = "Respawn in " + player.respawnTimer.ToString("0") + "...";
-            var pos = new Vector2(Game1.xRes / 2, Game1.yRes / 2) - font.MeasureString(respawn) / 2;
-            spriteBatch.DrawString(font, respawn, new Vector2(pos.X, Game1.yRes / 3 + Game1.yRes / 3), Color.White);
+            var pos = new Vector2(Game1.xRes / 2, Game1.yRes / 2);
+            if (player.lives > 0)
+            {
+                string respawn = "Respawn in " + player.respawnTimer.ToString("0") + "...";
+                pos -= (font.MeasureString(respawn) / 2);
+                spriteBatch.DrawString(font, respawn, new Vector2(pos.X, Game1.yRes / 3 + Game1.yRes / 3), Color.White);
+            }
+            else
+            {
+                string done = "Out of lives!";
+                pos -= (font.MeasureString(done) / 2);
+                spriteBatch.DrawString(font, done, new Vector2(pos.X, Game1.yRes / 3 + Game1.yRes / 3), Color.White);
+            }
+
         }
 
         public static void LoadGameplayInterface(List<Player> players, Camera camera)

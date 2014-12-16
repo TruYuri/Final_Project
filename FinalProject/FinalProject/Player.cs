@@ -58,7 +58,7 @@ namespace FinalProject
             status = PlayerState.Alive;
             weaponType = "bullet";
             timeToNextFire = Projectile.definitions[weaponType].fireTime;
-            lives = 5;
+            lives = 1;
             availableWeapons = new List<string>() { "bullet", "rocket" };
             weaponChangeTime = 0.0f;
             prevMouseWheel = Mouse.GetState().ScrollWheelValue;
@@ -100,7 +100,7 @@ namespace FinalProject
             if (status == PlayerState.Respawn || status == PlayerState.WeaponFired)
                 status = PlayerState.Alive;
 
-            if (localPlayer)
+            if (localPlayer && lives > 0)
             {
                 if (!alive)
                 {
